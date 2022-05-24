@@ -20,6 +20,8 @@ gccopts="${gccopts} -I ${PWD}/inc.d"
 
 gcc ${gccopts} -static -c src.d/init.c -o obj.d/init.o
 gcc ${gccopts} -static -c src.d/puts.c -o obj.d/puts.o
+gcc ${gccopts} -static -c src.d/log10.c -o obj.d/log10.o
+gcc ${gccopts} -static -c app.c -o obj.d/app.o
 
 nasmopts=''
 nasmopts="${nasmopts} -f elf64"
@@ -40,8 +42,10 @@ ldopts="${ldopts} -Map app.map"
 ld ${ldopts} -o app.exe \
 \
 obj.d/start.o \
+obj.d/app.o \
 \
 obj.d/init.o \
+obj.d/log10.o \
 obj.d/puts.o \
 \
 obj.d/alloca.o \
