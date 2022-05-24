@@ -8,10 +8,9 @@ global _s_getstack
 ;
 		section		.text
 
-_s_alloca:
-
 ; aligned-size = (request-size + (ALIGN_SIZE - 1)) & ~(ALIGN_SIZE - 1);
 
+_s_alloca:
 		; immediate ver
 		;mov			rax, rdi
 		;add			rax, 0x7

@@ -5,6 +5,8 @@ unalias -a
 
 cd "$(dirname "$(readlink -f "${BASH_SOURCE:-$0}")")"
 
+[ -d obj.d/ ] || mkdir obj.d
+
 gccopts=''
 gccopts="${gccopts} -std=c11"
 gccopts="${gccopts} -g -O0"

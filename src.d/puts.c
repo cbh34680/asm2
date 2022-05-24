@@ -1,4 +1,4 @@
-#include "defs.h"
+#include <defs.h>
 
 int _c_puts(const char* s)
 {
