@@ -30,6 +30,7 @@ nasmopts="${nasmopts} -i ${PWD}/inc.d"
 nasm ${nasmopts} src.d/start.s -o obj.d/start.o
 nasm ${nasmopts} src.d/alloca.s -o obj.d/alloca.o
 nasm ${nasmopts} src.d/memset.s -o obj.d/memset.o
+nasm ${nasmopts} src.d/strchr.s -o obj.d/strchr.o
 nasm ${nasmopts} src.d/strlen.s -o obj.d/strlen.o
 nasm ${nasmopts} src.d/write.s -o obj.d/write.o
 nasm ${nasmopts} src.d/exit.s -o obj.d/exit.o
@@ -50,6 +51,7 @@ obj.d/puts.o \
 \
 obj.d/alloca.o \
 obj.d/memset.o \
+obj.d/strchr.o \
 obj.d/strlen.o \
 obj.d/write.o \
 obj.d/exit.o \

@@ -2,12 +2,15 @@
 
 static void test()
 {
-	char tmp[1024] = { 0 };
+	char haystack[] = "abc";
+
+	const char* pos1 = _s_strchr(haystack, 'b');
+	_c_puts(pos1);
+
+	const char* pos2 = _s_strchr(haystack, 'B');
 
 	const void* s1 = _s_getstack();
-
 	char* buf = _s_alloca(16);
-
 	const void* s2 = _s_getstack();
 
 	_s_memset(buf, '@', 15);
@@ -19,7 +22,6 @@ static void test()
 	// https://qiita.com/EqualL2/items/168e083caa5f07a1105b
 
 	int x = _c_log10(255) + 1;
-
 }
 
 int main(int argc, char** argv, char** envs)

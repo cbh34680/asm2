@@ -5,6 +5,8 @@
 #define ERANGE			(34)
 #define NAN				(0.0f / 0.0f)
 
+#define NULL			((void*)0x0)
+
 // https://sites.uclouvain.be/SystInfo/usr/include/bits/huge_val.h.html
 typedef union { unsigned char __c[8]; double __d; } __huge_val_t;
 #define __HUGE_VAL_bytes        { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f }
@@ -19,6 +21,7 @@ typedef long ssize_t;
 
 void _s_exit(int);
 void *_s_memset(void *s, int c, size_t n);
+char* _s_strchr(const char *s, int c);
 size_t _s_strlen(const char *s);
 ssize_t _s_write(int fd, const void *buf, size_t count);
 void *_s_alloca(size_t size);
