@@ -23,4 +23,5 @@ end
 
 b _s_start
 run
+d
 

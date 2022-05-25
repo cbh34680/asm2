@@ -1,6 +1,6 @@
 %include "defs.s"
 
-global	_s_start
+global	_start
 
 extern	_s_exit
 extern	_c_init
@@ -8,7 +8,7 @@ extern	_c_init
 ;
 		section		.text
 
-_s_start:
+_start:
 		mov			rdi, [rsp]
 		lea			rsi, rsp[8]
 		lea			rdx, rsp[8 + rdi * 8 + 8]
