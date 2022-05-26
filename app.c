@@ -7,12 +7,14 @@ static void test()
 	const void* mem1 = _s_memchr(haystack, 'f', 9);
 	const void* mem2 = _s_memchr(haystack, 'B', 9);
 	const void* mem3 = _s_memchr(haystack, 'i', 9);
+
 	_c_puts(mem1 ? mem1 : "NULL");
 	_c_puts(mem2 ? mem2 : "NULL");
 	_c_puts(mem3 ? mem3 : "NULL");
 
 	const char* pos1 = _s_strchr(haystack, 'b');
 	const char* pos2 = _s_strchr(haystack, 'B');
+
 	_c_puts(pos1 ? pos1 : "NULL");
 	_c_puts(pos2 ? pos2 : "NULL");
 

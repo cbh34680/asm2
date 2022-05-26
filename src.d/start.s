@@ -22,5 +22,3 @@ _start:
 		mov			rdi, rax
 		call		_s_exit
 
-		hlt
-
