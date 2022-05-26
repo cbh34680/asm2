@@ -12,7 +12,8 @@ set verbose on
 
 tui enable
 
-layout asm
+#layout asm
+layout src
 layout regs
 #layout split
 
@@ -21,7 +22,8 @@ define hook-next
   refresh
 end
 
-b _s_start
+#b _start
+b main
 run
 d
 

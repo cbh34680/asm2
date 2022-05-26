@@ -5,7 +5,9 @@
 %define SC_close	3
 %define SC_exit		60
 
+%define FD_STDIN	0
 %define FD_STDOUT	1
+%define FD_STDERR	2
 
 ; open - flags - fcntl.h
 %define O_RDONLY        00000000

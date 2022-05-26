@@ -11,19 +11,22 @@ rm -rf obj.d/
 gccopts=''
 gccopts="${gccopts} -std=c11"
 gccopts="${gccopts} -g -O0"
-#gccopts="${gccopts} -nostdlib"
+gccopts="${gccopts} -nostdlib"
 #gccopts="${gccopts} -fno-builtin"
 gccopts="${gccopts} -ffreestanding"
 gccopts="${gccopts} -fno-asynchronous-unwind-tables"
 gccopts="${gccopts} -mno-red-zone"
 gccopts="${gccopts} -nostdinc"
+#gccopts="${gccopts} -static"
+gccopts="${gccopts} -Wall -Wno-unused-variable -Wno-unused-but-set-variable"
 gccopts="${gccopts} -I ${PWD}/inc.d"
 
-gcc ${gccopts} -static -c src.d/init.c -o obj.d/init.o
-gcc ${gccopts} -static -c src.d/log10.c -o obj.d/log10.o
-gcc ${gccopts} -static -c src.d/puts.c -o obj.d/puts.o
-gcc ${gccopts} -static -c src.d/strcpy.c -o obj.d/strcpy.o
-gcc ${gccopts} -static -c app.c -o app.o
+gcc ${gccopts} -c src.d/abort.c -o obj.d/abort.o
+gcc ${gccopts} -c src.d/init.c -o obj.d/init.o
+gcc ${gccopts} -c src.d/log10.c -o obj.d/log10.o
+gcc ${gccopts} -c src.d/print.c -o obj.d/print.o
+gcc ${gccopts} -c src.d/strcpy.c -o obj.d/strcpy.o
+gcc ${gccopts} -c app.c -o app.o
 
 nasmopts=''
 nasmopts="${nasmopts} -f elf64"
@@ -46,12 +49,15 @@ ldopts="${ldopts} -Map app.map"
 
 ld ${ldopts} -o app.exe \
 \
+--verbose \
+\
 obj.d/start.o \
 app.o \
 \
+obj.d/abort.o \
 obj.d/init.o \
 obj.d/log10.o \
-obj.d/puts.o \
+obj.d/print.o \
 obj.d/strcpy.o \
 \
 obj.d/alloca.o \
@@ -62,7 +68,8 @@ obj.d/memset.o \
 obj.d/strchr.o \
 obj.d/strlen.o \
 obj.d/syscall.o \
-#
+\
+> app.ls
 
 ./app.exe || echo $?
 
