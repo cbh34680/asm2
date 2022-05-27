@@ -1,12 +1,12 @@
 %include "defs.s"
 
-global _s_memcpy
+global _a_memcpy
 
 ;
 		section		.text
 
 ;
-_s_memcpy:
+_a_memcpy:
 		mov			rcx, rdx
 		cld
 

@@ -1,11 +1,11 @@
 %include "defs.s"
 
-global _s_memset
+global _a_memset
 
 ;
 		section		.text
 
-_s_memset:
+_a_memset:
 		mov			rax, rsi
 		mov			rcx, rdx
 		cld

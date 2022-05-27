@@ -139,31 +139,33 @@ extern int errno;
 extern int _s_close(int);
 extern void _s_exit(int);
 extern int _s_open(const char *pathname, int flags, mode_t mode);
-extern void *_s_memchr(const void *s, int c, size_t n);
-extern void *_s_memcpy(void *dest, const void *src, size_t n);
-extern void *_s_memmove(void *dest, const void *src, size_t n);
-extern void *_s_memset(void *s, int c, size_t n);
-extern char* _s_strchr(const char *s, int c);
-extern size_t _s_strlen(const char *s);
 extern ssize_t _s_write(int fd, const void *buf, size_t count);
-extern void *_s_alloca(size_t size);
-extern void *_s_getstack();
 
 // [2]
+extern void *_a_memchr(const void *s, int c, size_t n);
+extern void *_a_memcpy(void *dest, const void *src, size_t n);
+extern void *_a_memmove(void *dest, const void *src, size_t n);
+extern void *_a_memset(void *s, int c, size_t n);
+extern char* _a_strchr(const char *s, int c);
+extern size_t _a_strlen(const char *s);
+extern void *_a_alloca(size_t size);
+extern void *_a_getstack();
+
+// [3]
 extern char *_c_strcpy(char *dest, const char *src);
 extern int _c_puts(const char* s);
 extern double _c_log10(double x);
 
-// [3]
-extern ssize_t _c_print(const char* s);
-extern ssize_t _c_print_E(const char* s);
-extern int _c_puts_E(const char* s);
-extern void _c_easy_abort(const char *__assertion, const char *__file,
- unsigned int __line, const char *__function);
+// [4]
+extern ssize_t _u_print(const char* s);
+extern ssize_t _u_print_E(const char* s);
+extern int _u_puts_E(const char* s);
+extern void _u_easy_abort(const char *assertion, const char *file,
+ unsigned int line, const char *function);
 
 //
 #define assert(expr) \
- ( (expr) ? ((void)0) : _c_easy_abort(#expr, __FILE__, __LINE__, __func__) )
+ ( (expr) ? ((void)0) : _u_easy_abort(#expr, __FILE__, __LINE__, __func__) )
 
 
 

@@ -1,11 +1,11 @@
 %include "defs.s"
 
-global _s_strlen
+global _a_strlen
 
 ;
 		section		.text
 
-_s_strlen_1:
+_a_strlen_1:
 		xor			rcx, rcx
 
 		lea			rax, [rdi]
@@ -22,7 +22,7 @@ _s_strlen_1:
 		ret
 
 ;
-_s_strlen:
+_a_strlen:
 		; http://hp.vector.co.jp/authors/VA014520/asmhsp/chap6.html
 
 		mov			al, 0x0

@@ -2,6 +2,6 @@
 
 char *_c_strcpy(char *dest, const char *src)
 {
-	return (char*)_s_memcpy(dest, src, _s_strlen(src) + 1);
+	return (char*)_a_memcpy(dest, src, _a_strlen(src) + 1);
 }
 
