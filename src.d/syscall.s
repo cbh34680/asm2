@@ -2,35 +2,45 @@
 
 	section	.text
 ;
-%define SC_write 1
-global _s_write
+global write
 
-_s_write:
-	mov		rax, SC_write
+write:
+	mov		rax, 1
 	syscall
 	ret
 ;
-%define SC_open 2
-global _s_open
+global open
 
-_s_open:
-	mov		rax, SC_open
+open:
+	mov		rax, 2
 	syscall
 	ret
 ;
-%define SC_close 3
-global _s_close
+global close
 
-_s_close:
-	mov		rax, SC_close
+close:
+	mov		rax, 3
 	syscall
 	ret
 ;
-%define SC_exit 60
-global _s_exit
+global mmap
 
-_s_exit:
-	mov		rax, SC_exit
+mmap:
+	mov		rax, 9
+	syscall
+	ret
+;
+global munmap
+
+munmap:
+	mov		rax, 11
+	syscall
+	ret
+;
+global exit
+
+exit:
+	mov		rax, 60
 	syscall
 	ret
 ;

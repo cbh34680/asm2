@@ -74,6 +74,7 @@ extern __huge_val_t __huge_val;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long uint64_t;
+typedef long int off_t;
 
 // linux/elf.h
 typedef uint16_t Elf64_Half;
@@ -136,10 +137,12 @@ typedef unsigned short mode_t;
 // [1]
 extern int errno;
 
-extern int _s_close(int);
-extern void _s_exit(int);
-extern int _s_open(const char *pathname, int flags, mode_t mode);
-extern ssize_t _s_write(int fd, const void *buf, size_t count);
+extern int close(int);
+extern void exit(int);
+extern int open(const char *pathname, int flags, mode_t mode);
+extern ssize_t write(int fd, const void *buf, size_t count);
+extern void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+extern int munmap(void *addr, size_t length);
 
 // [2]
 extern void *_a_alloca(size_t size);

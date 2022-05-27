@@ -2,8 +2,8 @@
 
 global	_start
 
-extern	_s_exit
 extern	_c_init
+extern	exit
 
 ;
 		section		.text
@@ -20,5 +20,5 @@ _start:
 		call		_c_init
 
 		mov			rdi, rax
-		call		_s_exit
+		call		exit
 

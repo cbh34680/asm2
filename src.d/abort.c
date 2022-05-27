@@ -10,6 +10,6 @@ void _u_easy_abort(
 	_u_puts_e(file);
 	_u_puts_e(function);
 
-	_s_exit(120);
+	exit(120);
 }
 

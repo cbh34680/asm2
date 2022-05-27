@@ -54,9 +54,9 @@ static void test2()
 
 void test3()
 {
-	const int fd =_s_open("/home/user/asm/a.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+	const int fd = open("/home/user/asm/a.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
 
-	_s_close(fd);
+	close(fd);
 }
 
 void test4()

@@ -2,7 +2,7 @@
 
 static ssize_t _u_dprints(int fd, const char* s)
 {
-	return _s_write(fd, s, _a_strlen(s));
+	return write(fd, s, _a_strlen(s));
 }
 
 ssize_t _u_prints(const char* s)
@@ -20,7 +20,7 @@ static const char _u_LF = '\n';
 int _c_puts(const char* s)
 {
 	ssize_t nw = _u_prints(s);
-	nw += _s_write(FD_STDOUT, &_u_LF, 1);
+	nw += write(FD_STDOUT, &_u_LF, 1);
 
 	return (int)nw;
 }
@@ -28,7 +28,7 @@ int _c_puts(const char* s)
 int _u_puts_e(const char* s)
 {
 	ssize_t nw = _u_prints_e(s);
-	nw += _s_write(FD_STDERR, &_u_LF, 1);
+	nw += write(FD_STDERR, &_u_LF, 1);
 
 	return (int)nw;
 }
