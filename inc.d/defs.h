@@ -134,7 +134,7 @@ typedef unsigned long size_t;
 typedef long ssize_t;
 typedef unsigned short mode_t;
 
-// [1]
+// [0]
 extern int errno;
 
 extern int close(int);
@@ -144,7 +144,7 @@ extern ssize_t write(int fd, const void *buf, size_t count);
 extern void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 extern int munmap(void *addr, size_t length);
 
-// [2]
+// [1]
 extern void *_a_alloca(size_t size);
 extern void *_a_getstack();
 extern void *_a_memchr(const void *s, int c, size_t n);
@@ -153,9 +153,11 @@ extern void *_a_memmove(void *dest, const void *src, size_t n);
 extern void *_a_memset(void *s, int c, size_t n);
 extern char* _a_strchr(const char *s, int c);
 extern size_t _a_strlen(const char *s);
-extern char *_a_xgx(char *dest, const unsigned long src);
-extern char *_a_xwx(char *dest, const unsigned int src);
-extern char *_a_xhx(char *dest, const unsigned short src);
+
+// [2]
+extern char *_ua_pgx(char *dest, const unsigned long src);
+extern char *_ua_pwx(char *dest, const unsigned int src);
+extern char *_ua_phx(char *dest, const unsigned short src);
 
 // [3]
 extern char *_c_strcpy(char *dest, const char *src);
@@ -163,15 +165,14 @@ extern int _c_puts(const char* s);
 extern double _c_log10(double x);
 
 // [4]
-extern ssize_t _u_prints(const char* s);
-extern ssize_t _u_prints_e(const char* s);
-extern int _u_puts_e(const char* s);
-extern void _u_easy_abort(const char *assertion, const char *file,
- unsigned int line, const char *function);
+extern ssize_t _uc_prints(const char* s);
+extern ssize_t _uc_prints_e(const char* s);
+extern int _uc_puts_e(const char* s);
+extern void _uc_easy_abort(const char *assertion, const char *file, unsigned int line, const char *function);
 
 //
 #define assert(expr) \
- ( (expr) ? ((void)0) : _u_easy_abort(#expr, __FILE__, __LINE__, __func__) )
+ ( (expr) ? ((void)0) : _uc_easy_abort(#expr, __FILE__, __LINE__, __func__) )
 
 
 //

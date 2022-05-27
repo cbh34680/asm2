@@ -22,6 +22,9 @@ static void test()
 	char* buf = _a_alloca(16);
 	const void* s2 = _a_getstack();
 
+	_c_puts(_ua_pgx(buf, (unsigned long)s1));
+	_c_puts(_ua_pgx(buf, (unsigned long)s2));
+
 	_c_puts(_a_memset(buf, '@', 15));
 	buf[15]= '\0';
 
@@ -67,25 +70,25 @@ void test4()
 	_c_puts("   0123456789012345678");
 
 	_c_strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	_u_prints("0x[");
-	_u_prints(_a_xgx(buf, -2));
+	_uc_prints("0x[");
+	_uc_prints(_ua_pgx(buf, -2));
 	_c_puts("]");
 
 	_c_strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	_u_prints("0x[");
-	_u_prints(_a_xwx(buf, 2));
+	_uc_prints("0x[");
+	_uc_prints(_ua_pwx(buf, 2));
 	_c_puts("]");
 
 	_c_strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	_u_prints("0x[");
-	_u_prints(_a_xhx(buf, 5));
+	_uc_prints("0x[");
+	_uc_prints(_ua_phx(buf, 5));
 	_c_puts("]");
 }
 
 int main(int argc, char** argv, char** envs)
 {
 	for (int i=0; i<argc; i++) {
-		_u_prints("argv=");
+		_uc_prints("argv=");
 		_c_puts(argv[i]);
 	}
 

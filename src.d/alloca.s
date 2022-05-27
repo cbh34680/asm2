@@ -1,6 +1,6 @@
 %include "defs.s"
 
-%define ALIGN_SIZE	0x8
+%define ALIGN_SIZE	0x10
 
 global _a_alloca
 global _a_getstack

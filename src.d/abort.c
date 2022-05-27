@@ -1,14 +1,14 @@
 #include <defs.h>
 
-void _u_easy_abort(
+void _uc_easy_abort(
 	const char *assertion, const char *file,
 	unsigned int line, const char *function)
 {
-	_u_puts_e("### Abort. ###");
+	_uc_puts_e("### Abort. ###");
 
-	_u_puts_e(assertion);
-	_u_puts_e(file);
-	_u_puts_e(function);
+	_uc_puts_e(assertion);
+	_uc_puts_e(file);
+	_uc_puts_e(function);
 
 	exit(120);
 }

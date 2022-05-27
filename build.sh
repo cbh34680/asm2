@@ -43,7 +43,7 @@ nasm ${nasmopts} src.d/memset.s -o obj.d/memset.o
 nasm ${nasmopts} src.d/start.s -o obj.d/start.o
 nasm ${nasmopts} src.d/strchr.s -o obj.d/strchr.o
 nasm ${nasmopts} src.d/strlen.s -o obj.d/strlen.o
-nasm ${nasmopts} src.d/xNx.s -o obj.d/xNx.o
+nasm ${nasmopts} src.d/pNx.s -o obj.d/pNx.o
 
 nasm ${nasmopts} src.d/syscall.s -o obj.d/syscall.o
 
@@ -74,7 +74,7 @@ obj.d/memmove.o \
 obj.d/memset.o \
 obj.d/strchr.o \
 obj.d/strlen.o \
-obj.d/xNx.o \
+obj.d/pNx.o \
 \
 obj.d/syscall.o \
 \
