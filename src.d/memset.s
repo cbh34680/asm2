@@ -12,5 +12,7 @@ _a_memset:
 
 		rep stosb
 
+		mov			rax, rdi
+
 		ret
 

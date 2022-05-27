@@ -150,9 +150,9 @@ extern void *_a_memmove(void *dest, const void *src, size_t n);
 extern void *_a_memset(void *s, int c, size_t n);
 extern char* _a_strchr(const char *s, int c);
 extern size_t _a_strlen(const char *s);
-extern void *_a_xgx(char *dest, const unsigned long src);
-extern void *_a_xwx(char *dest, const unsigned int src);
-extern void *_a_xhx(char *dest, const unsigned short src);
+extern char *_a_xgx(char *dest, const unsigned long src);
+extern char *_a_xwx(char *dest, const unsigned int src);
+extern char *_a_xhx(char *dest, const unsigned short src);
 
 // [3]
 extern char *_c_strcpy(char *dest, const char *src);
@@ -171,6 +171,14 @@ extern void _u_easy_abort(const char *assertion, const char *file,
  ( (expr) ? ((void)0) : _u_easy_abort(#expr, __FILE__, __LINE__, __func__) )
 
 
+//
+struct auxv_data_type
+{
+	const Elf64_Ehdr* sysi_ehdr;
+	const Elf64_Phdr* main_phdr;
+	size_t pagesz;
+};
 
+extern struct auxv_data_type auxv_data;
 
 #endif

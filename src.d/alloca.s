@@ -44,5 +44,6 @@ _a_alloca:
 _a_getstack:
 		mov			rax, rsp
 		add			rax, 0x8
+
 		ret
 

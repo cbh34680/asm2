@@ -64,6 +64,7 @@ _a_xNx:
 .end:
 		pop			r13
 		pop			r12
+		mov			rax, rdi
 
 		leave
 		ret
