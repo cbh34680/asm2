@@ -48,3 +48,6 @@
 %define S_IWOTH 00002
 %define S_IXOTH 00001
 
+; data.s
+extern _HEXCHARS
+

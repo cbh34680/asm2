@@ -142,14 +142,17 @@ extern int _s_open(const char *pathname, int flags, mode_t mode);
 extern ssize_t _s_write(int fd, const void *buf, size_t count);
 
 // [2]
+extern void *_a_alloca(size_t size);
+extern void *_a_getstack();
 extern void *_a_memchr(const void *s, int c, size_t n);
 extern void *_a_memcpy(void *dest, const void *src, size_t n);
 extern void *_a_memmove(void *dest, const void *src, size_t n);
 extern void *_a_memset(void *s, int c, size_t n);
 extern char* _a_strchr(const char *s, int c);
 extern size_t _a_strlen(const char *s);
-extern void *_a_alloca(size_t size);
-extern void *_a_getstack();
+extern void *_a_xgx(char *dest, const unsigned long src);
+extern void *_a_xwx(char *dest, const unsigned int src);
+extern void *_a_xhx(char *dest, const unsigned short src);
 
 // [3]
 extern char *_c_strcpy(char *dest, const char *src);
@@ -157,9 +160,9 @@ extern int _c_puts(const char* s);
 extern double _c_log10(double x);
 
 // [4]
-extern ssize_t _u_print(const char* s);
-extern ssize_t _u_print_E(const char* s);
-extern int _u_puts_E(const char* s);
+extern ssize_t _u_prints(const char* s);
+extern ssize_t _u_prints_e(const char* s);
+extern int _u_puts_e(const char* s);
 extern void _u_easy_abort(const char *assertion, const char *file,
  unsigned int line, const char *function);
 

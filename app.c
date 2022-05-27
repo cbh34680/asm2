@@ -61,18 +61,43 @@ static void test2(const char* s)
 
 void test3()
 {
-	int fd =_s_open("/home/user/asm/a.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+	const int fd =_s_open("/home/user/asm/a.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
 
 	_s_close(fd);
+}
 
-	int x;
-	x = 55;
+void test4()
+{
+	char buf[256];
+
+	_c_puts("   1234567890123456789");
+	_c_puts("   0123456789012345678");
+
+	_c_strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	_u_prints("0x[");
+	_a_xgx(buf, -2);
+	_u_prints(buf);
+	_c_puts("]");
+
+	_c_strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	_u_prints("0x[");
+	_a_xwx(buf, 2);
+	_u_prints(buf);
+	_c_puts("]");
+
+	_c_strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	_u_prints("0x[");
+	_a_xhx(buf, 5);
+	_u_prints(buf);
+	_c_puts("]");
 }
 
 static void parse_auxv(const Elf64_auxv_t* auxv);
 
 int main(int argc, char** argv, char** envs)
 {
+	test4();
+
 	for (int i=0; i<argc; i++) {
 		_c_puts(argv[i]);
 	}
@@ -121,7 +146,7 @@ static void parse_auxv(const Elf64_auxv_t* auxv)
 				break;
 
 			case AT_EXECFN:
-				_u_print("AT_EXECFN=");
+				_u_prints("AT_EXECFN=");
 				_c_puts((char*)auxv->a_un.a_val);
 				break;
 		}
