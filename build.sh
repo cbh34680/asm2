@@ -25,6 +25,7 @@ gcc ${gccopts} -c src.d/abort.c -o obj.d/abort.o
 gcc ${gccopts} -c src.d/init.c -o obj.d/init.o
 gcc ${gccopts} -c src.d/log10.c -o obj.d/log10.o
 gcc ${gccopts} -c src.d/print.c -o obj.d/print.o
+gcc ${gccopts} -c src.d/strcmp.c -o obj.d/strcmp.o
 gcc ${gccopts} -c src.d/strcpy.c -o obj.d/strcpy.o
 gcc ${gccopts} -c app.c -o app.o
 
@@ -38,6 +39,7 @@ nasm ${nasmopts} src.d/alloca.s -o obj.d/alloca.o
 nasm ${nasmopts} src.d/atoi.s -o obj.d/atoi.o
 nasm ${nasmopts} src.d/data.s -o obj.d/data.o
 nasm ${nasmopts} src.d/memchr.s -o obj.d/memchr.o
+nasm ${nasmopts} src.d/memcmp.s -o obj.d/memcmp.o
 nasm ${nasmopts} src.d/memcpy.s -o obj.d/memcpy.o
 nasm ${nasmopts} src.d/memmove.s -o obj.d/memmove.o
 nasm ${nasmopts} src.d/memset.s -o obj.d/memset.o
@@ -68,12 +70,14 @@ obj.d/data.o \
 obj.d/init.o \
 obj.d/log10.o \
 obj.d/memchr.o \
+obj.d/memcmp.o \
 obj.d/memcpy.o \
 obj.d/memmove.o \
 obj.d/memset.o \
 obj.d/pNx.o \
 obj.d/print.o \
 obj.d/strchr.o \
+obj.d/strcmp.o \
 obj.d/strcpy.o \
 obj.d/strlen.o \
 \

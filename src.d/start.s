@@ -9,6 +9,7 @@ extern	exit
 		section		.text
 
 _start:
+		; argc, argv, envp
 		mov			rdi, [rsp]
 		lea			rsi, rsp[8]
 		lea			rdx, rsp[8 + rdi * 8 + 8]

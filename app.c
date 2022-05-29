@@ -109,6 +109,23 @@ static void test5()
 */
 }
 
+static void test6()
+{
+	char buf[64];
+
+	puts("--- 6");
+	puts(ua_phx(buf, memcmp("032", "022", 4)));
+	puts(ua_phx(buf, memcmp("022", "022", 4)));
+	puts(ua_phx(buf, memcmp("012", "022", 4)));
+
+	puts(ua_phx(buf, strcmp("032", "022")));
+	puts(ua_phx(buf, strcmp("022", "022")));
+	puts(ua_phx(buf, strcmp("012", "022")));
+
+
+	puts("---");
+}
+
 int main(int argc, char** argv, char** envs)
 {
 	for (int i=0; i<argc; i++) {
@@ -121,6 +138,7 @@ int main(int argc, char** argv, char** envs)
 	test3();
 	test4();
 	test5();
+	test6();
 
 	return 2;
 }

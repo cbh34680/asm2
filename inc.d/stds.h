@@ -15,6 +15,7 @@ extern int munmap(void *addr, size_t length);
 extern void *alloca(size_t size);
 extern int atoi(const char *nptr);
 extern void *memchr(const void *s, int c, size_t n);
+extern int memcmp(const void *s1, const void *s2, size_t n);
 extern void *memcpy(void *dest, const void *src, size_t n);
 extern void *memmove(void *dest, const void *src, size_t n);
 extern void *memset(void *s, int c, size_t n);
@@ -22,6 +23,7 @@ extern char* strchr(const char *s, int c);
 extern size_t strlen(const char *s);
 
 // [3] std library - c
+extern int strcmp(const char *s1, const char *s2);
 extern char *strcpy(char *dest, const char *src);
 extern int puts(const char* s);
 extern double log10(double x);
