@@ -20,7 +20,7 @@ strchr:
 		jmp			.loop
 
 .notf:
-		xor			rax, rax
+		xor			eax, eax
 
 .end:
 		ret

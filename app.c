@@ -87,7 +87,6 @@ static void test4()
 
 static void test5()
 {
-	int i1 = atoi("123");
 
 }
 

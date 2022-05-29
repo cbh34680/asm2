@@ -16,7 +16,7 @@ _start:
 		push		rsp
 		mov			rbp, rsp
 
-		xor			rax, rax
+		xor			eax, eax
 		call		_c_init
 
 		mov			rdi, rax

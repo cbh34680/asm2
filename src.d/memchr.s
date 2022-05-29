@@ -20,7 +20,7 @@ memchr:
 .notf:
 		; not found
 
-		xor			rax, rax
+		xor			eax, eax
 
 .end:
 		ret
