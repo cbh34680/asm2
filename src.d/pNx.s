@@ -1,32 +1,32 @@
 %include "defs.s"
 
-global ua_xgx
-global ua_xwx
-global ua_xhx
+global ua_pgx
+global ua_pwx
+global ua_phx
 
 ;
 		section		.text
 
 ;
-ua_xgx:
+ua_pgx:
 		mov			rcx, 15
-		call		ua_xNx
+		call		ua_pNx
 		ret
 
 ;
-ua_xwx:
+ua_pwx:
 		mov			rcx, 7
-		call		ua_xNx
+		call		ua_pNx
 		ret
 
 ;
-ua_xhx:
+ua_phx:
 		mov			rcx, 3
-		call		ua_xNx
+		call		ua_pNx
 		ret
 
 ;
-ua_xNx:
+ua_pNx:
 		enter		0, 0
 
 		push		r12

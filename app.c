@@ -25,8 +25,8 @@ static void test1()
 	char* buf = alloca(16);
 	const void* s2 = ua_getstack();
 
-	puts(ua_xgx(buf, (unsigned long)s1));
-	puts(ua_xgx(buf, (unsigned long)s2));
+	puts(ua_pgx(buf, (unsigned long)s1));
+	puts(ua_pgx(buf, (unsigned long)s2));
 
 	puts(memset(buf, '@', 15));
 	buf[15]= '\0';
@@ -74,17 +74,17 @@ static void test4()
 
 	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 	uc_prints("0x[");
-	uc_prints(ua_xgx(buf, -2));
+	uc_prints(ua_pgx(buf, -2));
 	puts("]");
 
 	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 	uc_prints("0x[");
-	uc_prints(ua_xwx(buf, 2));
+	uc_prints(ua_pwx(buf, 2));
 	puts("]");
 
 	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 	uc_prints("0x[");
-	uc_prints(ua_xhx(buf, 5));
+	uc_prints(ua_phx(buf, 5));
 	puts("]");
 }
 
@@ -93,18 +93,20 @@ static void test5()
 	char buf[64];
 
 	int x = atoi("111a");
-	puts(ua_xwx(buf, x));
+	puts(ua_pwx(buf, x));
 
+/*
 	puts("==========");
 
 	for (int i=0; i<8192; i++)
 	{
-		uc_prints(ua_xhx(buf, i));
+		uc_prints(ua_phx(buf, i));
 		uc_prints("=");
-		puts(ua_xhx(buf, PAGE_ALIGNED(i)));
+		puts(ua_phx(buf, PAGE_ALIGNED(i)));
 	}
 
 	puts("==========");
+*/
 }
 
 int main(int argc, char** argv, char** envs)

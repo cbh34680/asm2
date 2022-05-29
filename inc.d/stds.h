@@ -28,9 +28,9 @@ extern double log10(double x);
 
 // [4] user func - asm
 extern void *ua_getstack();
-extern char *ua_xgx(char *dest, const unsigned long src);
-extern char *ua_xwx(char *dest, const unsigned int src);
-extern char *ua_xhx(char *dest, const unsigned short src);
+extern char *ua_pgx(char *dest, const unsigned long src);
+extern char *ua_pwx(char *dest, const unsigned int src);
+extern char *ua_phx(char *dest, const unsigned short src);
 
 // [5] user func - c
 extern ssize_t uc_prints(const char* s);
