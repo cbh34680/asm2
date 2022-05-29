@@ -1,12 +1,12 @@
 %include "defs.s"
 
-global _a_memmove
+global memmove
 
 ;
 		section		.text
 
 ;
-_a_memmove:
+memmove:
 		add			rdi, rdx
 		dec			rdi
 

@@ -1,11 +1,11 @@
 %include "defs.s"
 
-global _a_memchr
+global memchr
 
 ;
 		section		.text
 
-_a_memchr:
+memchr:
 		mov			rax, rsi
 		mov			rcx, rdx
 		cld

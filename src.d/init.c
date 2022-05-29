@@ -1,4 +1,4 @@
-#include <defs.h>
+#include <stds.h>
 
 __huge_val_t __huge_val = { __HUGE_VAL_bytes };
 int errno = 0;

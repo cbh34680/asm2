@@ -1,4 +1,4 @@
-#include <defs.h>
+#include <stds.h>
 
 // https://hiroyukichishiro.com/log-log2-log10-log1p-functions-in-c-language/
 
@@ -96,7 +96,7 @@ static double mylog(double x)
 }
 
 //double mylog10(double x)
-double _c_log10(double x)
+double log10(double x)
 {
   return mylog(x) / mylog(10.0);
 }

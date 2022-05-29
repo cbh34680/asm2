@@ -1,11 +1,11 @@
 %include "defs.s"
 
-global _a_strchr
+global strchr
 
 ;
 		section		.text
 
-_a_strchr:
+strchr:
 		lea			rax, [rdi]
 		mov			rcx, rsi
 

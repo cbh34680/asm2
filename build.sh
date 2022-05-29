@@ -35,6 +35,7 @@ nasmopts="${nasmopts} -f elf64"
 nasmopts="${nasmopts} -i ${PWD}/inc.d"
 
 nasm ${nasmopts} src.d/alloca.s -o obj.d/alloca.o
+nasm ${nasmopts} src.d/atoi.s -o obj.d/atoi.o
 nasm ${nasmopts} src.d/data.s -o obj.d/data.o
 nasm ${nasmopts} src.d/memchr.s -o obj.d/memchr.o
 nasm ${nasmopts} src.d/memcpy.s -o obj.d/memcpy.o
@@ -61,20 +62,20 @@ app.o \
 obj.d/start.o \
 \
 obj.d/abort.o \
+obj.d/alloca.o \
+obj.d/atoi.o \
+obj.d/data.o \
 obj.d/init.o \
 obj.d/log10.o \
-obj.d/print.o \
-obj.d/strcpy.o \
-\
-obj.d/alloca.o \
-obj.d/data.o \
 obj.d/memchr.o \
 obj.d/memcpy.o \
 obj.d/memmove.o \
 obj.d/memset.o \
-obj.d/strchr.o \
-obj.d/strlen.o \
 obj.d/pNx.o \
+obj.d/print.o \
+obj.d/strchr.o \
+obj.d/strcpy.o \
+obj.d/strlen.o \
 \
 obj.d/syscall.o \
 \

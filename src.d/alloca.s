@@ -2,15 +2,15 @@
 
 %define ALIGN_SIZE	0x10
 
-global _a_alloca
-global _a_getstack
+global alloca
+global ua_getstack
 
 ;
 		section		.text
 
 ; aligned-size = (request-size + (ALIGN_SIZE - 1)) & ~(ALIGN_SIZE - 1);
 
-_a_alloca:
+alloca:
 		; immediate ver
 		;mov			rax, rdi
 		;add			rax, 0x7
@@ -41,7 +41,7 @@ _a_alloca:
 
 		jmp			[rcx - 0x8]
 
-_a_getstack:
+ua_getstack:
 		mov			rax, rsp
 		add			rax, 0x8
 

@@ -70,6 +70,23 @@ extern __huge_val_t __huge_val;
 #define AT_EXECFN			31
 #define AT_SYSINFO_EHDR     33
 
+// x86_64-linux-gnu/bits/mman-linux.h
+#define PROT_READ       0x1
+#define PROT_WRITE      0x2
+#define PROT_EXEC       0x4
+#define PROT_NONE       0x0
+
+// linux/mman.h
+#define MAP_SHARED         0x01
+#define MAP_PRIVATE        0x02
+#define MAP_FIXED          0x10
+#define MAP_ANONYMOUS      0x20
+# define MAP_LOCKED     0x02000
+
+// x86_64-linux-gnu/sys/mman.h
+#define MAP_FAILED     ((void *) -1)
+
+
 // stdint.h
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -134,47 +151,6 @@ typedef unsigned long size_t;
 typedef long ssize_t;
 typedef unsigned short mode_t;
 
-extern int errno;
-
-// [1] system call
-extern int close(int);
-extern void exit(int);
-extern int open(const char *pathname, int flags, mode_t mode);
-extern ssize_t write(int fd, const void *buf, size_t count);
-extern void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
-extern int munmap(void *addr, size_t length);
-
-// [2] std library - c
-extern void *_a_alloca(size_t size);
-extern void *_a_getstack();
-extern void *_a_memchr(const void *s, int c, size_t n);
-extern void *_a_memcpy(void *dest, const void *src, size_t n);
-extern void *_a_memmove(void *dest, const void *src, size_t n);
-extern void *_a_memset(void *s, int c, size_t n);
-extern char* _a_strchr(const char *s, int c);
-extern size_t _a_strlen(const char *s);
-
-// [4] std library - asm
-extern char *_c_strcpy(char *dest, const char *src);
-extern int _c_puts(const char* s);
-extern double _c_log10(double x);
-
-// [3] user func - c
-extern ssize_t _uc_prints(const char* s);
-extern ssize_t _uc_prints_e(const char* s);
-extern int _uc_puts_e(const char* s);
-extern void _uc_easy_abort(const char *assertion, const char *file, unsigned int line, const char *function);
-
-// [4] user func - asm
-extern char *_ua_pgx(char *dest, const unsigned long src);
-extern char *_ua_pwx(char *dest, const unsigned int src);
-extern char *_ua_phx(char *dest, const unsigned short src);
-
-//
-#define assert(expr) \
- ( (expr) ? ((void)0) : _uc_easy_abort(#expr, __FILE__, __LINE__, __func__) )
-
-
 //
 struct auxv_data_type
 {
@@ -182,7 +158,5 @@ struct auxv_data_type
 	const Elf64_Phdr* main_phdr;
 	size_t pagesz;
 };
-
-extern struct auxv_data_type auxv_data;
 
 #endif
