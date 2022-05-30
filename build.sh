@@ -22,8 +22,10 @@ gccopts="${gccopts} -Wall -Wno-unused-variable -Wno-unused-but-set-variable"
 gccopts="${gccopts} -I ${PWD}/inc.d"
 
 gcc ${gccopts} -c src.d/abort.c -o obj.d/abort.o
+gcc ${gccopts} -c src.d/brk.c -o obj.d/brk.o
 gcc ${gccopts} -c src.d/init.c -o obj.d/init.o
 gcc ${gccopts} -c src.d/log10.c -o obj.d/log10.o
+gcc ${gccopts} -c src.d/malloc.c -o obj.d/malloc.o
 gcc ${gccopts} -c src.d/print.c -o obj.d/print.o
 gcc ${gccopts} -c src.d/strcmp.c -o obj.d/strcmp.o
 gcc ${gccopts} -c src.d/strcpy.c -o obj.d/strcpy.o
@@ -66,9 +68,11 @@ obj.d/start.o \
 obj.d/abort.o \
 obj.d/alloca.o \
 obj.d/atoi.o \
+obj.d/brk.o \
 obj.d/data.o \
 obj.d/init.o \
 obj.d/log10.o \
+obj.d/malloc.o \
 obj.d/memchr.o \
 obj.d/memcmp.o \
 obj.d/memcpy.o \

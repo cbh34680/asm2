@@ -4,12 +4,16 @@
 #include <defs.h>
 
 // [1] system call
-extern int close(int);
-extern void exit(int);
-extern int open(const char *pathname, int flags, mode_t mode);
-extern ssize_t write(int fd, const void *buf, size_t count);
-extern void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
-extern int munmap(void *addr, size_t length);
+extern int syscall_close(int);
+extern void syscall_exit(int);
+extern int syscall_open(const char *pathname, int flags, mode_t mode);
+extern ssize_t syscall_write(int fd, const void *buf, size_t count);
+extern void* syscall_brk(void *addr);
+
+#define close		syscall_close
+#define exit		syscall_exit
+#define open		syscall_open
+#define write		syscall_write
 
 // [2] std library - asm
 extern void *alloca(size_t size);
@@ -23,9 +27,13 @@ extern char* strchr(const char *s, int c);
 extern size_t strlen(const char *s);
 
 // [3] std library - c
+extern int brk(void *addr);
+extern void free(void *ptr);
+extern void *malloc(size_t size);
 extern int strcmp(const char *s1, const char *s2);
 extern char *strcpy(char *dest, const char *src);
 extern int puts(const char* s);
+extern void *sbrk(intptr_t increment);
 extern double log10(double x);
 
 // [4] user func - asm

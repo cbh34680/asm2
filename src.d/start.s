@@ -2,8 +2,8 @@
 
 global	_start
 
-extern	_c_init
-extern	exit
+extern	uc_init
+extern	syscall_exit
 
 ;
 		section		.text
@@ -18,8 +18,8 @@ _start:
 		mov			rbp, rsp
 
 		xor			eax, eax
-		call		_c_init
+		call		uc_init
 
 		mov			rdi, rax
-		call		exit
+		call		syscall_exit
 

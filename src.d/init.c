@@ -8,7 +8,7 @@ extern int main(int argc, char** argv, char** envp);
 static void parse_auxv(const Elf64_auxv_t* auxv);
 static void parse_phdrs(const Elf64_Phdr* phdr);
 
-int _c_init(int argc, char** argv, char** envp)
+int uc_init(int argc, char** argv, char** envp)
 {
 	char* const* env = envp;
 	while (*env++)

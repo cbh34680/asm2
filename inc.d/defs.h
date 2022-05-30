@@ -8,6 +8,7 @@
 
 #define EOF				(-1)
 
+#define ENOMEM			(12)
 #define ERANGE			(34)
 #define NAN				(0.0f / 0.0f)
 
@@ -92,6 +93,8 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long uint64_t;
 typedef long int off_t;
+
+typedef long int intptr_t;
 
 // linux/elf.h
 typedef uint16_t Elf64_Half;

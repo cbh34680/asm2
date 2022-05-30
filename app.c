@@ -113,7 +113,6 @@ static void test6()
 {
 	char buf[64];
 
-	puts("--- 6");
 	puts(ua_phx(buf, memcmp("032", "022", 4)));
 	puts(ua_phx(buf, memcmp("022", "022", 4)));
 	puts(ua_phx(buf, memcmp("012", "022", 4)));
@@ -123,7 +122,66 @@ static void test6()
 	puts(ua_phx(buf, strcmp("012", "022")));
 
 
-	puts("---");
+}
+
+extern char edata, etext, end, __bss_start;
+
+int global_data1 = 100;
+int global_data2 = 200;
+
+int global_bss1;
+int global_bss2;
+
+static void test7()
+{
+	char buf[64];
+
+	uc_prints("test7=");
+	puts(ua_pgx(buf, (unsigned long)test7));
+	uc_prints("etext=");
+	puts(ua_pgx(buf, (unsigned long)&etext));
+	uc_prints("global_data1=");
+	puts(ua_pgx(buf, (unsigned long)&global_data1));
+	uc_prints("global_data2=");
+	puts(ua_pgx(buf, (unsigned long)&global_data2));
+	uc_prints("edata=");
+	puts(ua_pgx(buf, (unsigned long)&edata));
+	uc_prints("__bss_start=");
+	puts(ua_pgx(buf, (unsigned long)&__bss_start));
+	uc_prints("global_bss1=");
+	puts(ua_pgx(buf, (unsigned long)&global_bss1));
+	uc_prints("global_bss2=");
+	puts(ua_pgx(buf, (unsigned long)&global_bss2));
+	uc_prints("end=");
+	puts(ua_pgx(buf, (unsigned long)&end));
+	uc_prints("brk=");
+	puts(ua_pgx(buf, (unsigned long)brk(NULL)));
+	uc_prints("sbrk=");
+	puts(ua_pgx(buf, (unsigned long)sbrk(0)));
+	uc_prints("sbrk=");
+	puts(ua_pgx(buf, (unsigned long)sbrk(1)));
+	uc_prints("sbrk=");
+	puts(ua_pgx(buf, (unsigned long)sbrk(0)));
+	uc_prints("sbrk=");
+	puts(ua_pgx(buf, (unsigned long)sbrk(1)));
+	uc_prints("sbrk=");
+	puts(ua_pgx(buf, (unsigned long)sbrk(0)));
+}
+
+static void test8()
+{
+	char buf[64];
+
+	for (int i=0; i<100; i++)
+	{
+		uc_prints("before=");
+		uc_prints(ua_pgx(buf, (unsigned long)sbrk(0)));
+
+		void *p = malloc(500);
+
+		uc_prints(" after=");
+		puts(ua_pgx(buf, (unsigned long)p));
+	}
 }
 
 int main(int argc, char** argv, char** envs)
@@ -133,12 +191,22 @@ int main(int argc, char** argv, char** envs)
 		puts(argv[i]);
 	}
 
+	puts("|--- 1");
 	test1();
+	puts("|--- 2");
 	test2();
+	puts("|--- 3");
 	test3();
+	puts("|--- 4");
 	test4();
+	puts("|--- 5");
 	test5();
+	puts("|--- 6");
 	test6();
+	puts("|--- 7");
+	test7();
+	puts("|--- 8");
+	test8();
 
 	return 2;
 }

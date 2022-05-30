@@ -2,45 +2,45 @@
 
 	section	.text
 ;
-global write
+global syscall_read
 
-write:
-	mov		rax, 1
+syscall_read:
+	mov		eax, 0
 	syscall
 	ret
 ;
-global open
+global syscall_write
 
-open:
-	mov		rax, 2
+syscall_write:
+	mov		eax, 1
 	syscall
 	ret
 ;
-global close
+global syscall_open
 
-close:
-	mov		rax, 3
+syscall_open:
+	mov		eax, 2
 	syscall
 	ret
 ;
-global mmap
+global syscall_close
 
-mmap:
-	mov		rax, 9
+syscall_close:
+	mov		eax, 3
 	syscall
 	ret
 ;
-global munmap
+global syscall_brk
 
-munmap:
-	mov		rax, 11
+syscall_brk:
+	mov		eax, 12
 	syscall
 	ret
 ;
-global exit
+global syscall_exit
 
-exit:
-	mov		rax, 60
+syscall_exit:
+	mov		eax, 60
 	syscall
 	ret
 ;
