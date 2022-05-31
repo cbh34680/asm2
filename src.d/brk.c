@@ -1,6 +1,6 @@
 #include <stds.h>
 
-void *uo_curbrk;
+static void *uo_brk;
 
 int brk(void *request)
 {
@@ -12,26 +12,26 @@ int brk(void *request)
 		return -1;
 	}
 
-	uo_curbrk = newbrk;
+	uo_brk = newbrk;
 
 	return 0;
 }
 
 void *sbrk(intptr_t increment)
 {
-	if (! uo_curbrk)
+	if (! uo_brk)
 	{
-		uo_curbrk = syscall_brk(0);
+		uo_brk = syscall_brk(0);
 	}
 
 	if (increment == 0)
 	{
-		return uo_curbrk;
+		return uo_brk;
 	}
 
-	void *oldbrk = uo_curbrk;
+	void *oldbrk = uo_brk;
 
-	int rc = brk(uo_curbrk + increment);
+	int rc = brk(uo_brk + increment);
 	if (rc != 0)
 	{
 		return (void*)-1;

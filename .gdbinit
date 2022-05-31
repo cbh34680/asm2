@@ -4,6 +4,13 @@ set confirm off
 set disable-randomization off
 #set output-radix 16
 
+set host-charset UTF-8
+set charset UTF-8
+set target-charset UTF-8
+set target-wide-charset UTF-8
+
+#set style enabled off
+
 set backtrace past-entry
 set backtrace past-main
 set disassembly-flavor intel
@@ -12,9 +19,9 @@ set verbose on
 
 tui enable
 
-layout asm
-#layout src
-layout regs
+#layout asm
+layout src
+#layout regs
 #layout split
 
 # https://stackoverflow.com/questions/38803783/how-to-automatically-refresh-gdb-in-tui-mode
@@ -34,8 +41,10 @@ define hook-continue
   refresh
 end
 
-b _start
+#b _start
 #b main
+b test8
+
 run
 d
 

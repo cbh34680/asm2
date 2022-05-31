@@ -154,33 +154,35 @@ static void test7()
 	puts(ua_pgx(buf, (unsigned long)&global_bss2));
 	uc_prints("end=");
 	puts(ua_pgx(buf, (unsigned long)&end));
-	uc_prints("brk=");
-	puts(ua_pgx(buf, (unsigned long)brk(NULL)));
-	uc_prints("sbrk=");
-	puts(ua_pgx(buf, (unsigned long)sbrk(0)));
-	uc_prints("sbrk=");
-	puts(ua_pgx(buf, (unsigned long)sbrk(1)));
-	uc_prints("sbrk=");
-	puts(ua_pgx(buf, (unsigned long)sbrk(0)));
-	uc_prints("sbrk=");
-	puts(ua_pgx(buf, (unsigned long)sbrk(1)));
-	uc_prints("sbrk=");
-	puts(ua_pgx(buf, (unsigned long)sbrk(0)));
 }
 
-static void test8()
+static void test9()
 {
 	char buf[64];
 
-	for (int i=0; i<100; i++)
-	{
-		uc_prints("before=");
-		uc_prints(ua_pgx(buf, (unsigned long)sbrk(0)));
+	void *curr = NULL;
+	void *prev = NULL;
 
-		void *p = malloc(500);
+	for (int i=0; i<20; i++)
+	{
+		curr = sbrk(0);
+
+		if (curr == prev)
+		{
+			uc_prints("                       ");
+		}
+		else
+		{
+			uc_prints("before=");
+			uc_prints(ua_pgx(buf, (unsigned long)curr));
+		}
+
+		void *p = malloc(4000);
 
 		uc_prints(" after=");
 		puts(ua_pgx(buf, (unsigned long)p));
+
+		prev = curr;
 	}
 }
 
@@ -205,8 +207,8 @@ int main(int argc, char** argv, char** envs)
 	test6();
 	puts("|--- 7");
 	test7();
-	puts("|--- 8");
-	test8();
+	puts("|--- 9");
+	test9();
 
 	return 2;
 }

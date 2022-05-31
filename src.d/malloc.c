@@ -11,7 +11,7 @@ union header
 	struct
 	{
 		union header *ptr;
-		unsigned size;
+		size_t size;
 	}s;
 
 	Align x;
@@ -22,7 +22,7 @@ typedef union header Header;
 static Header base;
 static Header *freep = NULL;
 
-static Header *morecore(unsigned nu);
+static Header *morecore(size_t nu);
 
 void *malloc(size_t nbytes)
 {
@@ -72,7 +72,7 @@ void *malloc(size_t nbytes)
 
 #define NALLOC 1024
 
-static Header *morecore(unsigned nu)
+static Header *morecore(size_t nu)
 {
 	char *cp;
 	Header *up;
