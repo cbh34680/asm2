@@ -29,6 +29,7 @@ gcc ${gccopts} -c src.d/malloc.c -o obj.d/malloc.o
 gcc ${gccopts} -c src.d/print.c -o obj.d/print.o
 gcc ${gccopts} -c src.d/strcmp.c -o obj.d/strcmp.o
 gcc ${gccopts} -c src.d/strcpy.c -o obj.d/strcpy.o
+gcc ${gccopts} -c src.d/strdup.c -o obj.d/strdup.o
 gcc ${gccopts} -c app.c -o app.o
 
 #gcc ${gccopts} -shared -fPIC libmy.c -o libmy.so
@@ -83,6 +84,7 @@ obj.d/print.o \
 obj.d/strchr.o \
 obj.d/strcmp.o \
 obj.d/strcpy.o \
+obj.d/strdup.o \
 obj.d/strlen.o \
 \
 obj.d/syscall.o \

@@ -1,8 +1,5 @@
 #include <stds.h>
 
-#define PAGE_ALIGNED(v) ( ((v) + (auxv_data.pagesz - 1)) & ~(auxv_data.pagesz - 1) )
-
-
 static void test1()
 {
 	char haystack[] = "Abfhi\0aBc";
@@ -124,8 +121,6 @@ static void test6()
 
 }
 
-extern char edata, etext, end, __bss_start;
-
 int global_data1 = 100;
 int global_data2 = 200;
 
@@ -154,6 +149,112 @@ static void test7()
 	puts(ua_pgx(buf, (unsigned long)&global_bss2));
 	uc_prints("end=");
 	puts(ua_pgx(buf, (unsigned long)&end));
+}
+
+static void prt_(const char *name, const void *pos)
+{
+	char buf[64];
+
+	uc_prints("[");
+	uc_prints(name);
+	uc_prints("]\t");
+
+		uc_prints("\t");
+		uc_prints(ua_pgx(buf, (unsigned long)pos));
+
+		puts("");
+}
+
+#define prt(v) prt_(#v, (v))
+
+static void cb_freep(const void *mem, size_t siz)
+{
+	char buf[64];
+
+	uc_prints("\tfreep: ");
+	uc_prints(ua_pgx(buf, (unsigned long)mem));
+	uc_prints(", ");
+	puts(ua_pgx(buf, siz));
+}
+
+static void cb_alloc(const void *mem, size_t siz)
+{
+	char buf[64];
+
+	uc_prints("\talloc: ");
+	uc_prints(ua_pgx(buf, (unsigned long)mem));
+	uc_prints(", ");
+	puts(ua_pgx(buf, siz));
+}
+
+void uc_walk_freep(
+	void(* cb_freep)(const void *, size_t),
+	void(* cb_alloc)(const void *, size_t)
+);
+
+void const *uc_get_base();
+void const *uc_get_freep();
+
+static void test8()
+{
+	puts("@@ init @@");
+	void *left = sbrk(0);
+	prt(left);
+
+	void const *base = uc_get_base();
+	prt(base);
+
+	void const *freep = uc_get_freep();
+
+//
+	void *p1 = NULL;
+	void *p2 = NULL;
+	void *p3 = NULL;
+	void *p4 = NULL;
+
+	puts("-------------------------------------");
+	puts("@@ alloc @@");
+
+	p1 = malloc(16);
+	prt(p1);
+	p2 = malloc(16);
+	prt(p2);
+	p3 = malloc(16);
+	prt(p3);
+	p4 = strdup("abcde");
+	prt(p4);
+
+	puts("-------------------------------------");
+	puts("@@ walk @@");
+
+	uc_walk_freep(cb_freep, cb_alloc);
+
+	puts("-------------------------------------");
+	puts("@@ free @@");
+
+	free(p2);
+	prt(p2);
+	free(p4);
+	prt(p4);
+	free(p1);
+	prt(p1);
+	free(p3);
+	prt(p3);
+
+	puts("-------------------------------------");
+	puts("@@ walk @@");
+
+	uc_walk_freep(cb_freep, cb_alloc);
+
+//
+	puts("-------------------------------------");
+	puts("@@ last @@");
+
+	void *right = sbrk(0);
+	prt(right);
+
+	freep = uc_get_freep();
+	prt(freep);
 }
 
 static void test9()
@@ -207,6 +308,8 @@ int main(int argc, char** argv, char** envs)
 	test6();
 	puts("|--- 7");
 	test7();
+	puts("|--- 8");
+	test8();
 	puts("|--- 9");
 	test9();
 

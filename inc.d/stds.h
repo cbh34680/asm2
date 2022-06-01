@@ -31,6 +31,7 @@ extern int brk(void *addr);
 extern void free(void *ptr);
 extern void *malloc(size_t size);
 extern int strcmp(const char *s1, const char *s2);
+extern char *strdup(const char *s);
 extern char *strcpy(char *dest, const char *src);
 extern int puts(const char* s);
 extern void *sbrk(intptr_t increment);
@@ -43,10 +44,10 @@ extern char *ua_pwx(char *dest, const unsigned int src);
 extern char *ua_phx(char *dest, const unsigned short src);
 
 // [5] user func - c
+extern void uc_easy_abort(const char *assertion, const char *file, unsigned int line, const char *function);
 extern ssize_t uc_prints(const char* s);
 extern ssize_t uc_prints_e(const char* s);
 extern int uc_puts_e(const char* s);
-extern void uc_easy_abort(const char *assertion, const char *file, unsigned int line, const char *function);
 
 //
 #define assert(expr) \
@@ -55,5 +56,9 @@ extern void uc_easy_abort(const char *assertion, const char *file, unsigned int 
 //
 extern int errno;
 extern struct auxv_data_type auxv_data;
+extern char edata, etext, end, __bss_start;
+
+#define PAGE_ALIGNED(v) ( ((size_t)(v) + (auxv_data.pagesz - 1)) & ~(auxv_data.pagesz - 1) )
+
 
 #endif
