@@ -2,21 +2,29 @@
 
 ;%define ALIGN_SIZE	0x10
 
-global alloca
 global ua_getstack
+global alloca
 
 ;
 		section		.text
 
+ua_getstack:
+		mov			rax, rsp
+		add			rax, 0x8
+
+		ret
+
 ; aligned-size = (request-size + (ALIGN_SIZE - 1)) & ~(ALIGN_SIZE - 1);
 
 alloca:
-		; rdi: request size
-		; rax: alligned size
-		mov			rax, rdi
-		add			rax, STACK_ALIGN_SIZE - 1
+		; rcx: aligned mask
 		mov			rcx, STACK_ALIGN_SIZE - 1
 		not			rcx
+
+		; rdi: request size
+		; rax: aligned size
+		mov			rax, rdi
+		add			rax, STACK_ALIGN_SIZE - 1
 		and			rax, rcx
 
 		; purge "call stack (return address)"
@@ -35,10 +43,4 @@ alloca:
 		mov			rax, rsp
 
 		jmp			[rcx - 0x8]
-
-ua_getstack:
-		mov			rax, rsp
-		add			rax, 0x8
-
-		ret
 

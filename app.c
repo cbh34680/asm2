@@ -292,12 +292,18 @@ static void test9()
 
 static void test10()
 {
+	char buf[64];
+
 	const void* s1 = ua_getstack();
 	char *d1 = strdupa("HEllO wOrlD");
 	const void* s2 = ua_getstack();
 
-	assert((s1 - s2) == 16);
 
+	puts(ua_pgx(buf, (unsigned long)s1));
+	puts(ua_pgx(buf, (unsigned long)d1));
+	puts(ua_pgx(buf, (unsigned long)s2));
+
+	//assert((s1 - s2) == 16);
 
 
 }
@@ -327,6 +333,8 @@ int main(int argc, char** argv, char** envs)
 	test8();
 	puts("|--- 9");
 	test9();
+	puts("|--- 10");
+	test10();
 
 	return 2;
 }
