@@ -1,6 +1,6 @@
 %include "defs.s"
 
-%define ALIGN_SIZE	0x10
+;%define ALIGN_SIZE	0x10
 
 global alloca
 global ua_getstack
@@ -14,8 +14,8 @@ alloca:
 		; rdi: request size
 		; rax: alligned size
 		mov			rax, rdi
-		add			rax, ALIGN_SIZE - 1
-		mov			rcx, ALIGN_SIZE - 1
+		add			rax, STACK_ALIGN_SIZE - 1
+		mov			rcx, STACK_ALIGN_SIZE - 1
 		not			rcx
 		and			rax, rcx
 

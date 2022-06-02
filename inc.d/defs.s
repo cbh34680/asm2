@@ -42,6 +42,8 @@
 %define S_IWOTH 00002
 %define S_IXOTH 00001
 
+%define STACK_ALIGN_SIZE  0x10
+
 ; data.s
 extern _HEXCHARS
 
