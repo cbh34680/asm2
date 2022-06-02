@@ -9,27 +9,63 @@ extern memcpy
 ;
 		section		.text
 
-strdupa:
-		; r11: save current stack
-		mov			r11, rsp
+strdupa_1:
+		; r11: save return address
+		mov			r11, [rsp]
 
-		; rsi: use at memcpy
+		; rsi: use at memcpy()
 		mov			rsi, rdi
 
 		; rdi: orig string
 		call		strlen
-		inc			rax
+
+		; rdx: strlen() + 1
+		mov			rdx, rax
+		inc			rdx
 
 		; extend stack
-		mov			rdi, rax
+		mov			rdi, rdx
 		call		alloca
 
 		; purge "call stack (return address)"
 		add			rsp, 0x8
 
-		; purge "call stack (return address)"
-		mov			rax, r11
-		add			rax, 0x8
+		; rdi: copy dest
+		mov			rdi, rsp
+		call		memcpy
 
-		jmp			[r11]
+		jmp			r11
+
+
+strdupa:
+		; r11: save return address
+		mov			r11, [rsp]
+
+		; rsi: use at memcpy()
+		mov			rsi, rdi
+
+		; rdi: orig string
+		call		strlen
+
+		; rdi: strlen() + 1
+		mov			rdi, rax
+		inc			rdi
+
+		; extend stack
+		call		alloca
+
+		; purge "call stack (return address)"
+		add			rsp, 0x8
+
+		; rdi: copy dest
+		; rdx: size
+		mov			rdx, rdi
+		mov			rdi, rsp
+		call		memcpy
+
+		; DEBUG
+		;mov			byte [rax], '@'
+
+		jmp			r11
+
 
