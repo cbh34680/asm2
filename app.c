@@ -40,7 +40,9 @@ static void test2()
 {
 	const char* s = "ABCDE";
 
-	char sz[100];
+	char sz[100] = { 0 };
+
+	puts(memset(sz, '-', sizeof(sz) - 1));
 
 	puts(strcpy(sz, "abcde"));
 	puts(memmove(sz + 2, sz, 2));

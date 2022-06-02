@@ -6,7 +6,7 @@ global memchr
 		section		.text
 
 memchr:
-		enter		0, 0
+		;enter		0, 0
 
 		mov			rax, rsi
 		mov			rcx, rdx
@@ -25,6 +25,6 @@ memchr:
 		xor			eax, eax
 
 .end:
-		leave
+		;leave
 		ret
 

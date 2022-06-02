@@ -11,11 +11,6 @@ global ua_getstack
 ; aligned-size = (request-size + (ALIGN_SIZE - 1)) & ~(ALIGN_SIZE - 1);
 
 alloca:
-		; immediate ver
-		;mov			rax, rdi
-		;add			rax, 0x7
-		;and			rax, 0xfffffffffffffff8
-
 		; rdi: request size
 		; rax: alligned size
 		mov			rax, rdi
@@ -27,14 +22,14 @@ alloca:
 		; purge "call stack (return address)"
 		add			rsp, 0x8
 
-		; extend stack
+		; extend stack (aligned)
 		mov			rcx, rsp
 		sub			rcx, rax
 		xchg		rcx, rsp
 
 		; !! DEBUG !!
-		mov			byte [rsp], 0xcc
-		mov			byte [rcx - 0x9], 0xbb
+		;mov			byte [rsp], 0xcc
+		;mov			byte [rcx - 0x9], 0xbb
 
 		; set ret-val
 		mov			rax, rsp

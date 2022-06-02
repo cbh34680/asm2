@@ -22,9 +22,11 @@ strlen_1:
 		ret
 
 ;
+; http://hp.vector.co.jp/authors/VA014520/asmhsp/chap6.html
+;
 strlen:
-		enter		0, 0
-		; http://hp.vector.co.jp/authors/VA014520/asmhsp/chap6.html
+		;enter		0, 0
+
 
 		;mov			al, 0x0 ; '\0'
 		xor			eax, eax
@@ -38,6 +40,6 @@ strlen:
 		add			rax, 2
 		neg			rax
 
-		leave
+		;leave
 		ret
 
