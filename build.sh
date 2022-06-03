@@ -31,6 +31,7 @@ gcc ${gccopts} -c src.d/strcmp.c -o obj.d/strcmp.o
 gcc ${gccopts} -c src.d/strcpy.c -o obj.d/strcpy.o
 gcc ${gccopts} -c src.d/strdup.c -o obj.d/strdup.o
 gcc ${gccopts} -c app.c -o app.o
+gcc ${gccopts} -c app.c -E -P -C -o app.pc
 
 #gcc ${gccopts} -shared -fPIC libmy.c -o libmy.so
 
@@ -46,6 +47,7 @@ nasm ${nasmopts} src.d/memcmp.s -o obj.d/memcmp.o
 nasm ${nasmopts} src.d/memcpy.s -o obj.d/memcpy.o
 nasm ${nasmopts} src.d/memmove.s -o obj.d/memmove.o
 nasm ${nasmopts} src.d/memset.s -o obj.d/memset.o
+nasm ${nasmopts} src.d/stack.s -o obj.d/stack.o
 nasm ${nasmopts} src.d/start.s -o obj.d/start.o
 nasm ${nasmopts} src.d/strchr.s -o obj.d/strchr.o
 nasm ${nasmopts} src.d/strdupa.s -o obj.d/strdupa.o
@@ -82,6 +84,7 @@ obj.d/memmove.o \
 obj.d/memset.o \
 obj.d/pNx.o \
 obj.d/print.o \
+obj.d/stack.o \
 obj.d/strchr.o \
 obj.d/strcmp.o \
 obj.d/strcpy.o \

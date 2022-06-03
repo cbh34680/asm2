@@ -27,7 +27,7 @@ ua_phx:
 
 ;
 ua_pNx:
-		;enter		0, 0
+		enter		0, 0
 
 		push		r12
 		push		r13
@@ -66,6 +66,6 @@ ua_pNx:
 		pop			r12
 		mov			rax, rdi
 
-		;leave
+		leave
 		ret
 

@@ -19,9 +19,9 @@ static void test1()
 	puts(pos1 ? pos1 : "NULL");
 	puts(pos2 ? pos2 : "NULL");
 
-	const void* s1 = ua_getstack();
+	const void* s1 = ua_getsp();
 	char* d1 = alloca(16);
-	const void* s2 = ua_getstack();
+	const void* s2 = ua_getsp();
 
 	assert(s2 == d1);
 	assert((s1 - s2) == 16);
@@ -294,13 +294,13 @@ static void test9()
 	}
 }
 
-static void test10()
+static void test10(long a, long b, long c)
 {
 	char buf[64];
 
-	const void* s1 = ua_getstack();
+	const void* s1 = ua_getsp();
 	const void* d1 = strdupa("HEllO wOrlD");
-	const void* s2 = ua_getstack();
+	const void* s2 = ua_getsp();
 
 	puts(ua_pgx(buf, (unsigned long)s1));
 	puts(ua_pgx(buf, (unsigned long)d1));
@@ -310,8 +310,33 @@ static void test10()
 
 	assert((s1 - s2) == 16);
 	assert(d1 == s2);
+}
 
+static void test11()
+{
+	char buf[64];
 
+	for (int i=0; ; i++)
+	{
+		void *p = ua_bt_caller(i);
+		if (! p)
+		{
+			break;
+		}
+
+		puts(ua_pgx(buf, (unsigned long)p));
+	}
+}
+
+static void foo_(const char *a, ...)
+{
+}
+
+#define foo(...) foo_(__VA_ARGS__, -1)
+
+static void test12()
+{
+	foo("aaa", "bbb", "ccc", "ddd", "eee", "fff", "000", "111", "222", "333", "444", "555");
 }
 
 int main(int argc, char** argv, char** envs)
@@ -340,7 +365,11 @@ int main(int argc, char** argv, char** envs)
 	puts("|--- 9");
 	test9();
 	puts("|--- 10");
-	test10();
+	test10(1, 2, 3);
+	puts("|--- 11");
+	test11();
+	puts("|--- 12");
+	test12();
 
 	return 2;
 }

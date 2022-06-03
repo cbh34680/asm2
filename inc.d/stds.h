@@ -39,7 +39,8 @@ extern void *sbrk(intptr_t increment);
 extern double log10(double x);
 
 // [4] user func - asm
-extern void *ua_getstack();
+extern void *ua_bt_caller(int deep);
+extern void *ua_getsp();
 extern char *ua_pgx(char *dest, const unsigned long src);
 extern char *ua_pwx(char *dest, const unsigned int src);
 extern char *ua_phx(char *dest, const unsigned short src);
