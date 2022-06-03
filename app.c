@@ -299,13 +299,17 @@ static void test10()
 	char buf[64];
 
 	const void* s1 = ua_getstack();
-	puts(strdupa("HEllO wOrlD"));
+	const void* d1 = strdupa("HEllO wOrlD");
 	const void* s2 = ua_getstack();
 
 	puts(ua_pgx(buf, (unsigned long)s1));
+	puts(ua_pgx(buf, (unsigned long)d1));
 	puts(ua_pgx(buf, (unsigned long)s2));
 
+	puts(d1);
+
 	assert((s1 - s2) == 16);
+	assert(d1 == s2);
 
 
 }
