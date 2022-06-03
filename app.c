@@ -328,15 +328,35 @@ static void test11()
 	}
 }
 
-static void foo_(const char *a, ...)
+static unsigned char foo_(const char *a, ...)
 {
+	unsigned char al = 0xff;
+
+	__asm__ volatile("mov %0, %%al" : "=r"(al));
+
+	int jjj = 0;
+	jjj++;
+
+	return al;
 }
 
 #define foo(...) foo_(__VA_ARGS__, -1)
 
 static void test12()
 {
-	foo("aaa", "bbb", "ccc", "ddd", "eee", "fff", "000", "111", "222", "333", "444", "555");
+	char buf[64];
+
+	char c = 0x11;
+	short s = 0x22;
+	int i = 0x33;
+	long l = 0x44;
+	char* p = 0x55;
+	double d = 0x66;
+
+	puts(ua_pbx(buf, foo("", c, s, i, l, p, c, s, i, l, p)));
+	puts(ua_pbx(buf, foo("", c, s, i, d, p, c, s, i, d, p)));
+
+	//foo("aaa", "bbb", "ccc", "ddd", "eee", "fff", "000", "111", "222", "333", "444", "555");
 }
 
 int main(int argc, char** argv, char** envs)

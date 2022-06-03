@@ -3,69 +3,76 @@
 global ua_pgx
 global ua_pwx
 global ua_phx
+global ua_pbx
 
 ;
 		section		.text
 
 ;
+; INPUT: 1byte(0xff) --> OUTPUT: charX2("ff")
+;
+
+; long (8byte)
 ua_pgx:
-		mov			rcx, 15
+		mov			rcx, 16
 		call		ua_pNx
 		ret
 
-;
+; int (4byte)
 ua_pwx:
-		mov			rcx, 7
+		mov			rcx, 8
 		call		ua_pNx
 		ret
 
-;
+; short (2byte)
 ua_phx:
-		mov			rcx, 3
+		mov			rcx, 4
+		call		ua_pNx
+		ret
+
+; char (1byte)
+ua_pbx:
+		mov			rcx, 2
 		call		ua_pNx
 		ret
 
 ;
 ua_pNx:
 		enter		0, 0
+		push		rbx
 
-		push		r12
-		push		r13
+		; rbx = &outbuf[N] (0 origin)
+		lea			rbx, [rdi + rcx]
 
-		lea			r13, [rdi + rcx]
-
-		; out-buf[N + 1] = '\0'
-		mov			byte [r13 + 1], 0x0
+		; outbuf[N + 1] = '\0'
+		mov			byte [rbx], 0x0
 
 .loop:
-		mov			r12, rsi
+		; rax: input
+		mov			rax, rsi
 
-		; get last 8bit
-		and			r12, 0xf
+		; last 8bit
+		and			eax, 0xf
 
-		; convert to char
-		mov			al, _HEXCHARS[r12]
+		; load char
+		mov			al, _HEXCHARS[rax]
 
-		; write to out-pos
-		mov			byte [r13], al
+		; outpos--
+		dec			rbx
 
-		; check range
-		cmp			r13, rdi
-		je			.end
+		; store
+		mov			byte [rbx], al
 
-		; shift 4bit
+		; rax: input = input >> 4
 		shr			rsi, 4
 
-		; set out-pos + 1
-		dec			r13
-
-		jmp			.loop
+		; repeat rcx times
+		loop		.loop
 
 .end:
-		pop			r13
-		pop			r12
 		mov			rax, rdi
 
+		pop			rbx
 		leave
 		ret
 
