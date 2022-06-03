@@ -90,22 +90,13 @@ strdupa:
 
 		; rdi: copy dest
 		; rdx: size
-		mov			rdx, rdi
-		lea			rdi, [rsp + 0x8]
+		lea			rdx, [rsp + 0x8]
+		xchg		rdx, rdi
 		call		memcpy
-
-		;
-		mov			rdx, [rsp]
-
-		; DEBUG
-		;mov			byte [rax], '@'
-
-		lea			rdx, [rax - 8]
-		mov			rdx, [rdx]
 
 		; purge "call stack (return address)"
 		add			rsp, 0x8
 
-		jmp			rdx
+		jmp			[rax - 8]
 
 
