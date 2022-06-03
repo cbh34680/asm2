@@ -44,50 +44,31 @@ alloca_1:
 
 		jmp			[rcx - 0x8]
 
-alloca_2:
-		; rax: aligned mask
-		mov			rax, STACK_ALIGN_SIZE - 1
-		not			rax
-
-		; rdi: request size --> aligned size
-		add			rdi, STACK_ALIGN_SIZE - 1
-		and			rdi, rax
-
-		; purge "call stack (return address)"
-		add			rsp, 0x8
-
-		; extend stack (aligned)
-		mov			rax, rsp
-		sub			rax, rdi
-		xchg		rax, rsp
-
-		; !! DEBUG !!
-		;mov			byte [rsp], 0xcc
-		;mov			byte [rax - 0x9], 0xbb
-
-		jmp			[rax - 0x8]
-
 alloca:
 		; rax: aligned mask
 		mov			rax, STACK_ALIGN_SIZE - 1
 		not			rax
 
-		; rdi: request size --> aligned size
+		; rdi: request size
+		; rcx: aligned size
 		mov			rcx, rdi
 		add			rcx, STACK_ALIGN_SIZE - 1
 		and			rcx, rax
 
-		; purge "call stack (return address)"
+		; rax: return-address
+		mov			rax, [rsp]
+
+		; purge "call stack (return-address)"
 		add			rsp, 0x8
 
 		; extend stack (aligned)
-		mov			rax, rsp
-		sub			rax, rcx
-		xchg		rax, rsp
+		sub			rsp, rcx
 
-		; !! DEBUG !!
-		;mov			byte [rsp], 0xcc
-		;mov			byte [rax - 0x9], 0xbb
+		; store return-address
+		mov			[rsp], rax
 
-		jmp			[rax - 0x8]
+		; set retval
+		lea			rax, [rsp]
+
+		jmp			[rax]
 

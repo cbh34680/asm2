@@ -2,6 +2,7 @@
 
 static void test1()
 {
+	char buf[64];
 	char haystack[] = "Abfhi\0aBc";
 
 	const void* mem1 = memchr(haystack, 'f', 9);
@@ -19,11 +20,14 @@ static void test1()
 	puts(pos2 ? pos2 : "NULL");
 
 	const void* s1 = ua_getstack();
-	char* buf = alloca(16);
+	char* d1 = alloca(16);
 	const void* s2 = ua_getstack();
+
+	assert(s2 == d1);
 	assert((s1 - s2) == 16);
 
 	puts(ua_pgx(buf, (unsigned long)s1));
+	puts(ua_pgx(buf, (unsigned long)d1));
 	puts(ua_pgx(buf, (unsigned long)s2));
 
 	puts(memset(buf, '@', 15));
@@ -297,7 +301,6 @@ static void test10()
 	const void* s1 = ua_getstack();
 	puts(strdupa("HEllO wOrlD"));
 	const void* s2 = ua_getstack();
-
 
 	puts(ua_pgx(buf, (unsigned long)s1));
 	puts(ua_pgx(buf, (unsigned long)s2));
