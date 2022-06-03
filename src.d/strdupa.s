@@ -37,7 +37,7 @@ strdupa_1:
 		jmp			r11
 
 
-strdupa:
+strdupa_2:
 		; r11: save return address
 		mov			r11, [rsp]
 
@@ -67,5 +67,45 @@ strdupa:
 		;mov			byte [rax], '@'
 
 		jmp			r11
+
+strdupa:
+		; rsi: use at memcpy()
+		mov			rsi, rdi
+
+		; rdi: orig string
+		call		strlen
+
+		; rdi: strlen() + 1
+		mov			rdi, rax
+		inc			rdi
+
+		; rdx: save return address
+		mov			rdx, [rsp]
+
+		; extend stack
+		call		alloca
+
+		; store return address
+		mov			[rsp], rdx		
+
+		; rdi: copy dest
+		; rdx: size
+		mov			rdx, rdi
+		lea			rdi, [rsp + 0x8]
+		call		memcpy
+
+		;
+		mov			rdx, [rsp]
+
+		; DEBUG
+		;mov			byte [rax], '@'
+
+		lea			rdx, [rax - 8]
+		mov			rdx, [rdx]
+
+		; purge "call stack (return address)"
+		add			rsp, 0x8
+
+		jmp			rdx
 
 
