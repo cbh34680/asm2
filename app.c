@@ -316,7 +316,7 @@ static void test11()
 {
 	char buf[64];
 
-	for (int i=0; ; i++)
+	for (int i=0; i<9999; i++)
 	{
 		void *p = ua_bt_caller(i);
 		if (! p)
@@ -328,19 +328,15 @@ static void test11()
 	}
 }
 
-static unsigned char foo_(const char *a, ...)
+static unsigned char foo(const char *a, ...)
 {
-	unsigned char al = 0xff;
-
+	unsigned char al;
 	__asm__ volatile("mov %0, %%al" : "=r"(al));
+	//assert(al == 0);
 
-	int jjj = 0;
-	jjj++;
 
 	return al;
 }
-
-#define foo(...) foo_(__VA_ARGS__, -1)
 
 static void test12()
 {
@@ -355,12 +351,16 @@ static void test12()
 
 	puts(ua_pbx(buf, foo("", c, s, i, l, p, c, s, i, l, p)));
 	puts(ua_pbx(buf, foo("", c, s, i, d, p, c, s, i, d, p)));
+	puts(ua_pbx(buf, foo("", d)));
+	//puts(ua_pbx(buf, foo("", d)));
 
 	//foo("aaa", "bbb", "ccc", "ddd", "eee", "fff", "000", "111", "222", "333", "444", "555");
 }
 
 int main(int argc, char** argv, char** envs)
 {
+	ua_test();
+
 	for (int i=0; i<argc; i++) {
 		uc_prints("argv=");
 		puts(argv[i]);

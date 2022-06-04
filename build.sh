@@ -17,6 +17,11 @@ gccopts="${gccopts} -ffreestanding"
 gccopts="${gccopts} -fno-asynchronous-unwind-tables"
 gccopts="${gccopts} -masm=intel"
 gccopts="${gccopts} -mno-red-zone"
+
+gccopts="${gccopts} -mpreferred-stack-boundary=3"
+#gccopts="${gccopts} -mincoming-stack-boundary=3"
+#gccopts="${gccopts} -mstackrealign"
+
 gccopts="${gccopts} -nostdlib"
 gccopts="${gccopts} -nostdinc"
 gccopts="${gccopts} -Wall -Wno-unused-variable -Wno-unused-but-set-variable"
@@ -48,12 +53,13 @@ nasm ${nasmopts} src.d/memcmp.s -o obj.d/memcmp.o
 nasm ${nasmopts} src.d/memcpy.s -o obj.d/memcpy.o
 nasm ${nasmopts} src.d/memmove.s -o obj.d/memmove.o
 nasm ${nasmopts} src.d/memset.s -o obj.d/memset.o
+nasm ${nasmopts} src.d/pNx.s -o obj.d/pNx.o
 nasm ${nasmopts} src.d/stack.s -o obj.d/stack.o
 nasm ${nasmopts} src.d/start.s -o obj.d/start.o
 nasm ${nasmopts} src.d/strchr.s -o obj.d/strchr.o
 nasm ${nasmopts} src.d/strdupa.s -o obj.d/strdupa.o
 nasm ${nasmopts} src.d/strlen.s -o obj.d/strlen.o
-nasm ${nasmopts} src.d/pNx.s -o obj.d/pNx.o
+nasm ${nasmopts} src.d/test.s -o obj.d/test.o
 
 nasm ${nasmopts} src.d/syscall.s -o obj.d/syscall.o
 
@@ -92,6 +98,7 @@ obj.d/strcpy.o \
 obj.d/strdup.o \
 obj.d/strdupa.o \
 obj.d/strlen.o \
+obj.d/test.o \
 \
 obj.d/syscall.o \
 \

@@ -45,6 +45,7 @@ extern char *ua_pgx(char *dest, const unsigned long src);
 extern char *ua_pwx(char *dest, const unsigned int src);
 extern char *ua_phx(char *dest, const unsigned short src);
 extern char *ua_pbx(char *dest, const unsigned char src);
+extern void ua_test();
 
 // [5] user func - c
 extern void uc_easy_abort(const char *assertion, const char *file, unsigned int line, const char *function);

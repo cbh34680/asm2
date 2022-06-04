@@ -14,7 +14,10 @@ _start:
 		lea			rsi, rsp[8]
 		lea			rdx, rsp[8 + rdi * 8 + 8]
 
-		; guard
+		; first rsp
+		push		rsp
+
+		; push guard
 		push		0x0
 
 		; make frame
