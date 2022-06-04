@@ -11,16 +11,21 @@ rm -rf obj.d/
 gccopts=''
 gccopts="${gccopts} -std=c11"
 gccopts="${gccopts} -g -O0"
-#gccopts="${gccopts} -fno-builtin"
 #gccopts="${gccopts} -static"
+
 gccopts="${gccopts} -ffreestanding"
+#gccopts="${gccopts} -fno-builtin"
 gccopts="${gccopts} -fno-asynchronous-unwind-tables"
+gccopts="${gccopts} -fno-pic"
+gccopts="${gccopts} -fno-stack-protector"
+
+gccopts="${gccopts} -m64"
 gccopts="${gccopts} -masm=intel"
 gccopts="${gccopts} -mno-red-zone"
 
-gccopts="${gccopts} -mpreferred-stack-boundary=3"
-#gccopts="${gccopts} -mincoming-stack-boundary=3"
-#gccopts="${gccopts} -mstackrealign"
+#gccopts="${gccopts} -mpreferred-stack-boundary=3"
+##gccopts="${gccopts} -mincoming-stack-boundary=3"
+##gccopts="${gccopts} -mstackrealign"
 
 gccopts="${gccopts} -nostdlib"
 gccopts="${gccopts} -nostdinc"

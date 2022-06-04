@@ -29,13 +29,16 @@ ua_bt_caller:
 		mov			rdi, [rdi]
 
 		; check guard (push zero at [start.s])
-		;test		rax, rax
-		;loopne		.loop
+		test		rax, rax
+		loopne		.loop
 
-		loop		.loop
+		test		rsi, rsi
+		jz			.end
 
-		; first sp:
-		;mov			xxx, rdi + 16
+		; store bp
+		mov			[rsi], rdi
+
+.end:
 
 		leave
 		ret

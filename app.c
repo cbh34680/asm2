@@ -316,23 +316,44 @@ static void test11()
 {
 	char buf[64];
 
-	for (int i=0; i<9999; i++)
+	void *bp = NULL, *bp_first = NULL;
+	void *caller = (void *)-1;
+
+	for (int i=0; i<9999 && caller; i++)
 	{
-		void *p = ua_bt_caller(i);
-		if (! p)
+		caller = ua_bt_caller(i, &bp);
+
+		if (! bp_first)
 		{
-			break;
+			bp_first = bp;
 		}
 
-		puts(ua_pgx(buf, (unsigned long)p));
+		uc_prints(ua_pgx(buf, (unsigned long)caller));
+		uc_prints("\t");
+		puts(ua_pgx(buf, (unsigned long)bp));
 	}
+
+	puts(ua_pgx(buf, (unsigned long)(bp - bp_first)));
 }
 
-static unsigned char foo(const char *a, ...)
+static unsigned char foo(const char *format, ...)
 {
 	unsigned char al;
 	__asm__ volatile("mov %0, %%al" : "=r"(al));
+
+	// double num
 	//assert(al == 0);
+
+	void **pos = &format;
+
+	pos += 2;
+	pos += 8;
+
+	char *c = (char *)*pos++;
+	short *s = (short *)*pos++;
+	int *i = (int *)*pos++;
+	//long *l = (long *)*pos++;
+	char **p = (char **)*pos++;
 
 
 	return al;
@@ -349,16 +370,21 @@ static void test12()
 	char* p = 0x55;
 	double d = 0x66;
 
-	puts(ua_pbx(buf, foo("", c, s, i, l, p, c, s, i, l, p)));
-	puts(ua_pbx(buf, foo("", c, s, i, d, p, c, s, i, d, p)));
-	puts(ua_pbx(buf, foo("", d)));
+	puts(ua_pbx(buf, foo("", c)));
+
+	//puts(ua_pbx(buf, foo("", c, s, i, l, p, c, s, i, l, p)));
+	//puts(ua_pbx(buf, foo("", c, s, i, d, p, c, s, i, d, p)));
+	//puts(ua_pbx(buf, foo("", d)));
 	//puts(ua_pbx(buf, foo("", d)));
 
 	//foo("aaa", "bbb", "ccc", "ddd", "eee", "fff", "000", "111", "222", "333", "444", "555");
+
 }
 
 int main(int argc, char** argv, char** envs)
 {
+	char s[1024];
+
 	ua_test();
 
 	for (int i=0; i<argc; i++) {
