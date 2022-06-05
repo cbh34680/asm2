@@ -1,8 +1,9 @@
 #include <stds.h>
 
+char buf[1024];
+
 static void test1()
 {
-	char buf[64];
 	char haystack[] = "Abfhi\0aBc";
 
 	const void* mem1 = memchr(haystack, 'f', 9);
@@ -71,8 +72,6 @@ static void test3()
 
 static void test4()
 {
-	char buf[256];
-
 	puts("   1234567890123456789");
 	puts("   0123456789012345678");
 
@@ -94,8 +93,6 @@ static void test4()
 
 static void test5()
 {
-	char buf[64];
-
 	int x = atoi("111a");
 	puts(ua_pwx(buf, x));
 
@@ -115,8 +112,6 @@ static void test5()
 
 static void test6()
 {
-	char buf[64];
-
 	puts(ua_phx(buf, memcmp("032", "022", 4)));
 	puts(ua_phx(buf, memcmp("022", "022", 4)));
 	puts(ua_phx(buf, memcmp("012", "022", 4)));
@@ -136,8 +131,6 @@ int global_bss2;
 
 static void test7()
 {
-	char buf[64];
-
 	uc_prints("test7=");
 	puts(ua_pgx(buf, (unsigned long)test7));
 	uc_prints("etext=");
@@ -160,8 +153,6 @@ static void test7()
 
 static void prt_(const char *name, const void *pos)
 {
-	char buf[64];
-
 	uc_prints("[");
 	uc_prints(name);
 	uc_prints("]\t");
@@ -176,8 +167,6 @@ static void prt_(const char *name, const void *pos)
 
 static void cb_freep(const void *mem, size_t siz)
 {
-	char buf[64];
-
 	uc_prints("\tfreep: ");
 	uc_prints(ua_pgx(buf, (unsigned long)mem));
 	uc_prints(", ");
@@ -186,8 +175,6 @@ static void cb_freep(const void *mem, size_t siz)
 
 static void cb_alloc(const void *mem, size_t siz)
 {
-	char buf[64];
-
 	uc_prints("\talloc: ");
 	uc_prints(ua_pgx(buf, (unsigned long)mem));
 	uc_prints(", ");
@@ -266,8 +253,6 @@ static void test8()
 
 static void test9()
 {
-	char buf[64];
-
 	void *curr = NULL;
 	void *prev = NULL;
 
@@ -296,8 +281,6 @@ static void test9()
 
 static void test10(long a, long b, long c)
 {
-	char buf[64];
-
 	const void* s1 = ua_getsp();
 	const void* d1 = strdupa("HEllO wOrlD");
 	const void* s2 = ua_getsp();
@@ -314,8 +297,6 @@ static void test10(long a, long b, long c)
 
 static void test11()
 {
-	char buf[64];
-
 	void *bp = NULL, *bp_first = NULL;
 	void *caller = (void *)-1;
 
@@ -338,22 +319,58 @@ static void test11()
 
 static unsigned char foo(const char *format, ...)
 {
+#if 0
 	unsigned char al;
-	__asm__ volatile("mov %0, %%al" : "=r"(al));
+	void *bp;
 
-	// double num
-	//assert(al == 0);
+	//__asm__ volatile("mov %0, %%al" : "=r"(al));
 
-	void **pos = &format;
+	__asm__ volatile
+	(
+		"mov %[val1], %%al\n\t"
+		"mov %[val2], %%rbp\n\t"
+			:
+		[val1]"=r"(al),
+		[val2]"=r"(bp)
+	);
+#endif
 
-	pos += 2;
-	pos += 8;
+	void *bp;
+	ua_bt_caller(0, &bp);
 
-	char *c = (char *)*pos++;
-	short *s = (short *)*pos++;
-	int *i = (int *)*pos++;
-	//long *l = (long *)*pos++;
-	char **p = (char **)*pos++;
+	unsigned char *uc = (unsigned char *)(bp - 0xbd);
+	unsigned char al = *uc;
+
+	puts("[reg]");
+	unsigned long *ul_a = (unsigned long *)(bp - 0xa8);
+	for (int i=0; i<5; i++)
+	{
+		unsigned long *ul = (unsigned long *)&ul_a[i];
+		puts(ua_pgx(buf, *ul));
+
+int iii = 0;
+iii++;
+	}
+
+	puts("[xmm]");
+	__uint128_t *ui128_a = (__uint128_t *)(bp - 0x80);
+	for (int i=0; i<al; i++)
+	{
+		double *dp = (double *)&ui128_a[i];
+int iii = 0;
+iii++;
+	}
+
+	puts("[stack]");
+	ul_a = (unsigned long *)(bp + 0x10);
+	for (int i=0; i<4; i++)
+	{
+		unsigned long *ul = (unsigned long *)&ul_a[i];
+		puts(ua_pgx(buf, *ul));
+
+int iii = 0;
+iii++;
+	}
 
 
 	return al;
@@ -361,17 +378,18 @@ static unsigned char foo(const char *format, ...)
 
 static void test12()
 {
-	char buf[64];
+	char c = 0x1;
+	short s = 0x2;
+	int i = 0x3;
+	long l = 0x4;
+	char* p = 0x5;
+	double d = 0x6;
 
-	char c = 0x11;
-	short s = 0x22;
-	int i = 0x33;
-	long l = 0x44;
-	char* p = 0x55;
-	double d = 0x66;
+	puts(ua_pbx(buf, foo("", c, c, c, c, 0xff, d, d, d, d, d, d, d, d, i, s, l, p)));
 
-	puts(ua_pbx(buf, foo("", c)));
-
+	//foo("", d);
+	//foo("", d, d, d);
+	//foo("", d, d, d, d, d, d, d, d, d, d);
 	//puts(ua_pbx(buf, foo("", c, s, i, l, p, c, s, i, l, p)));
 	//puts(ua_pbx(buf, foo("", c, s, i, d, p, c, s, i, d, p)));
 	//puts(ua_pbx(buf, foo("", d)));

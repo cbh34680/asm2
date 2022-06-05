@@ -17,6 +17,7 @@ gccopts="${gccopts} -ffreestanding"
 #gccopts="${gccopts} -fno-builtin"
 gccopts="${gccopts} -fno-asynchronous-unwind-tables"
 gccopts="${gccopts} -fno-pic"
+gccopts="${gccopts} -fno-pie"
 gccopts="${gccopts} -fno-stack-protector"
 
 gccopts="${gccopts} -m64"
