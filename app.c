@@ -317,29 +317,61 @@ static void test11()
 	puts(ua_pgx(buf, (unsigned long)(bp - bp_first)));
 }
 
+// https://qiita.com/nori26/items/9ccef61571602a6a3b45
+
+typedef struct
+{
+	unsigned int	gp_offset;			//汎用レジスタ分のオフセット
+	unsigned int	fp_offset;			//浮動小数点レジスタ分のオフセット
+	void			*overflow_arg_area;	//スタック渡し分のアドレス
+	void			*reg_save_area;		//レジスタ渡し分の先頭アドレス
+
+	void			*_fp_save_area;
+}
+va_list[1];
+
+void va_start_(va_list ap, void *last)
+{
+	void *bp;
+
+	ua_bt_caller(1, &bp);
+
+	ap->gp_offset = 0UL;
+	ap->fp_offset = 0UL;
+
+	ap->overflow_arg_area	= bp + 0x10;
+	ap->reg_save_area		= bp - 0xa8;
+	ap->_fp_save_area		= bp - 0x80;
+}
+
+void va_end(va_list ap)
+{
+	ap->gp_offset = 0UL;
+	ap->fp_offset = 0UL;
+
+	ap->overflow_arg_area	= NULL;
+	ap->reg_save_area		= NULL;
+	ap->_fp_save_area		= NULL;
+}
+
+#define va_start(ap, last) va_start_((ap), &last)
+
 static unsigned char foo(const char *format, ...)
 {
-#if 0
-	unsigned char al;
 	void *bp;
+	unsigned char al;
+
+	//ua_bt_caller(0, &bp);
 
 	//__asm__ volatile("mov %0, %%al" : "=r"(al));
-
 	__asm__ volatile
 	(
-		"mov %[val1], %%al\n\t"
-		"mov %[val2], %%rbp\n\t"
+		"mov %[val1], %%rbp\n\t"
+		"mov %[val2], %%al\n\t"
 			:
-		[val1]"=r"(al),
-		[val2]"=r"(bp)
+		[val1]"=r"(bp),
+		[val2]"=r"(al)
 	);
-#endif
-
-	void *bp;
-	ua_bt_caller(0, &bp);
-
-	unsigned char *uc = (unsigned char *)(bp - 0xbd);
-	unsigned char al = *uc;
 
 	puts("[reg]");
 	unsigned long *ul_a = (unsigned long *)(bp - 0xa8);
@@ -347,18 +379,16 @@ static unsigned char foo(const char *format, ...)
 	{
 		unsigned long *ul = (unsigned long *)&ul_a[i];
 		puts(ua_pgx(buf, *ul));
-
-int iii = 0;
-iii++;
 	}
 
 	puts("[xmm]");
+	puts(ua_pbx(buf, al));
 	__uint128_t *ui128_a = (__uint128_t *)(bp - 0x80);
 	for (int i=0; i<al; i++)
 	{
-		double *dp = (double *)&ui128_a[i];
-int iii = 0;
-iii++;
+		//double *dp = (double *)&ui128_a[i];
+		unsigned long *dp = (double *)&ui128_a[i];
+		puts(ua_pgx(buf, *dp));
 	}
 
 	puts("[stack]");
@@ -367,11 +397,12 @@ iii++;
 	{
 		unsigned long *ul = (unsigned long *)&ul_a[i];
 		puts(ua_pgx(buf, *ul));
-
-int iii = 0;
-iii++;
 	}
 
+	va_list args;
+	va_start(args, format);
+
+	va_end(args);
 
 	return al;
 }
