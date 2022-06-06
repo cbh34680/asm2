@@ -2,12 +2,12 @@
 
 %define ON			1
 
-global atoi
+global ua_atoul
 
 ;
 		section		.text
 
-atoi:
+ua_atoul:
 		enter		0, 0
 
 		push		rbx
@@ -37,7 +37,7 @@ atoi:
 
 		; eax *= 10, eax += ecx
 		mul			r10
-		add			eax, ecx
+		add			rax, rcx
 
 		; next loop
 		inc			rdi
@@ -58,7 +58,7 @@ atoi:
 		test		ebx, ebx
 		jz			.exit
 
-		neg			eax
+		neg			rax
 
 .exit:
 		pop			r10

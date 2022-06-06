@@ -19,8 +19,8 @@ set verbose on
 
 tui enable
 
-#layout asm
-layout src
+layout asm
+#layout src
 layout regs
 #layout split
 
@@ -41,10 +41,11 @@ define hook-continue
   refresh
 end
 
-#b _start
-b main
+b _start
+#b main
 #b ua_test
 
 run
 d
+refresh
 

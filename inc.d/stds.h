@@ -49,16 +49,18 @@ extern unsigned long va_arg_i(va_list ap);
 
 
 // [4] user func - asm
+extern long ua_atoul(const char *nptr);
 extern void *ua_bt_caller(int deep, void *bp);
 extern void *ua_getsp(void);
+extern char *ua_itoa(int value, char *str);
 extern char *ua_pgx(char *dest, const unsigned long src);
 extern char *ua_pwx(char *dest, const unsigned int src);
 extern char *ua_phx(char *dest, const unsigned short src);
 extern char *ua_pbx(char *dest, const unsigned char src);
-extern void ua_test(void);
 
 // [5] user func - c
-extern void uc_easy_abort(const char *assertion, const char *file, unsigned int line, const char *function);
+extern void uc_easy_abort(const char *assertion,
+ const char *file, unsigned int line, const char *function);
 extern ssize_t uc_prints(const char* s);
 extern ssize_t uc_prints_e(const char* s);
 extern int uc_puts_e(const char* s);

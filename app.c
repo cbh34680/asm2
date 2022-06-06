@@ -427,11 +427,41 @@ static void test12()
 	);
 }
 
+static void test13()
+{
+	puts(ua_pwx(buf, atoi("10")));
+	puts(ua_pwx(buf, atoi("-10")));
+	puts(ua_pgx(buf, ua_atoul("10")));
+	puts(ua_pgx(buf, ua_atoul("-10")));
+
+	puts("* 1");
+	puts(ua_pwx(buf, atoi("4294967295")));		// UI max
+	puts(ua_pwx(buf, atoi("4294967296")));
+
+	puts("* 2");
+	puts(ua_pgx(buf, ua_atoul("4294967295")));		// UI max
+	puts(ua_pgx(buf, ua_atoul("4294967296")));
+
+	puts("* 3");
+	puts(ua_pgx(buf, ua_atoul("18446744073709551615")));	// UL max
+	puts(ua_pgx(buf, ua_atoul("18446744073709551616")));
+
+	//
+	puts(ua_itoa(-1234, buf));
+	puts(ua_itoa( 1234, buf));
+	puts(ua_itoa(-1, buf));
+	puts(ua_itoa(0, buf));
+	puts(ua_itoa(-0, buf));
+}
+
+extern void ua_test(long);
+
 int main(int argc, char** argv, char** envs)
 {
 	char s[1024];
 
-	ua_test();
+	ua_test(-1);
+	ua_test(-1L);
 
 	for (int i=0; i<argc; i++) {
 		uc_prints("argv=");
@@ -462,6 +492,8 @@ int main(int argc, char** argv, char** envs)
 	test11();
 	puts("|--- 12");
 	test12();
+	puts("|--- 13");
+	test13();
 
 	return 2;
 }
