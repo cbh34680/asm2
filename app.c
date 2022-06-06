@@ -447,6 +447,8 @@ static void test13()
 	puts(ua_pgx(buf, ua_atoul("18446744073709551616")));
 
 	//
+	puts(ua_itoa(2147483647, buf));
+	puts(ua_itoa(-2147483648, buf));		// -2147483648: min neg
 	puts(ua_itoa(-1234, buf));
 	puts(ua_itoa( 1234, buf));
 	puts(ua_itoa(-1, buf));
