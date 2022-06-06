@@ -317,7 +317,7 @@ static void test11()
 	puts(ua_pgx(buf, (unsigned long)(bp - bp_first)));
 }
 
-static unsigned char foo(const char *format, ...)
+static unsigned char va_test_raw(const char *_nouse, ...)
 {
 	void *bp;
 	unsigned char al;
@@ -360,8 +360,11 @@ static unsigned char foo(const char *format, ...)
 		puts(ua_pgx(buf, *ul));
 	}
 
-	puts("[va]");
+	return al;
+}
 
+static void va_test(const char *format, ...)
+{
 	va_list args;
 	va_start(args, format);
 
@@ -391,8 +394,6 @@ static unsigned char foo(const char *format, ...)
 	puts(ua_pgx(buf, va_arg(args, int)));
 
 	va_end(args);
-
-	return al;
 }
 
 static void test12()
@@ -406,7 +407,17 @@ static void test12()
 	double d2 = 0xaa;
 	float f = 0x7;
 
-	foo("",
+	puts(ua_pbx(buf, va_test_raw("",
+		c, s, c, s, 0xff,
+		d, d, d, f, d, d, d, d2,
+		0xee, s, l, 0xbb,
+		(double)0x9999,
+		(double)0x7777,
+		0x1234
+	)));
+
+	puts("[va_test]");
+	va_test("",
 		c, s, c, s, 0xff,
 		d, d, d, f, d, d, d, d2,
 		0xee, s, l, 0xbb,
@@ -414,17 +425,6 @@ static void test12()
 		(double)0x7777,
 		0x1234
 	);
-
-	//foo("", d);
-	//foo("", d, d, d);
-	//foo("", d, d, d, d, d, d, d, d, d, d);
-	//puts(ua_pbx(buf, foo("", c, s, i, l, p, c, s, i, l, p)));
-	//puts(ua_pbx(buf, foo("", c, s, i, d, p, c, s, i, d, p)));
-	//puts(ua_pbx(buf, foo("", d)));
-	//puts(ua_pbx(buf, foo("", d)));
-
-	//foo("aaa", "bbb", "ccc", "ddd", "eee", "fff", "000", "111", "222", "333", "444", "555");
-
 }
 
 int main(int argc, char** argv, char** envs)
