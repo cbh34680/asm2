@@ -8,30 +8,25 @@ extern _HEXCHARS
 ;
 		section		.text
 
-ua_itoa_1:
-		enter		16, 0
+ua_itoa:
+		enter		0x10, 0
 
 		; backup
 		push		rbx
-		push		r12
 
-		; flags
-		xor			ebx, ebx
+		; ch: neg-flag
+		; cl: temp char
+		xor			ecx, ecx
 
 		; input value
 		mov			eax, edi
 
 		; output buffer
-		lea			r12, [rbp - 16]
-		mov			byte [r12], 0x0
+		lea			rbx, [rbp - 1]
+		mov			byte [rbx], 0x0
 
 		; for div
 		mov			edi, 10
-
-		; 4294967295
-		; 1000000000
-		; max loop count
-		mov			rcx, 10
 
 		; check eax <0
 		cmp			eax, 0
@@ -41,30 +36,32 @@ ua_itoa_1:
 		neg			eax
 
 		; set neg-flag ON
-		mov			bh, ON
+		mov			ch, ON
 
 .loop:
 		; change write position
-		dec			r12
+		dec			rbx
 
 		; eax = eax / edi
 		; edx = eax % edi
-		cdq
-		idiv		edi
+		;
+		; cdq: segfault if eax=-2147483648
+		cqo
+		div			edi
 
 		; write '0' - '9'
-		mov			bl, _HEXCHARS[edx]
-		mov			[r12], bl
+		mov			cl, _HEXCHARS[rdx]
+		mov			[rbx], cl
 
 		; check input >0
 		test		eax, eax
-		loopnz		.loop
+		jnz			.loop
 
 		; prepare memcpy (dest)
 		mov			rdi, rsi
 
 		; check neg-flag
-		test		bh, bh
+		test		ch, ch
 		jz			.copy
 
 		; neg-flag is ON
@@ -73,104 +70,20 @@ ua_itoa_1:
 		inc			rdi
 
 .copy:
-		; prepare memcpy (size)
-		sub			rcx, 10
-		neg			rcx
-		inc			rcx
+		; save addr
+		mov			rax, rsi
 
 		; prepare memcpy (src)
-		mov			rax, rsi
-		mov			rsi, r12
+		mov			rsi, rbx
+
+		; prepare memcpy (size)
+		mov			rcx, rbp
+		sub			rcx, rsi
 
 		; do memcpy
 		cld
 		rep movsb
 
-		pop			r12
-		pop			rbx
-		leave
-		ret
-
-ua_itoa:
-		enter		16, 0
-
-		; backup
-		push		rbx
-		push		r12
-
-		; flags
-		xor			ebx, ebx
-
-		; input value
-		mov			eax, edi
-
-		; output buffer
-		lea			r12, [rbp - 16]
-		mov			byte [r12], 0x0
-
-		; for div
-		mov			edi, 10
-
-		; 4294967295
-		; 1000000000
-		; max loop count
-		mov			rcx, 10
-
-		; check eax <0
-		cmp			eax, 0
-		jns			.loop
-
-		; eax *= -1
-		neg			eax
-
-		; set neg-flag ON
-		mov			bh, ON
-
-.loop:
-		; change write position
-		dec			r12
-
-		; eax = eax / edi
-		; edx = eax % edi
-		;cdq
-		cqo
-		idiv		rdi
-
-		; write '0' - '9'
-		mov			bl, _HEXCHARS[rdx]
-		mov			[r12], bl
-
-		; check input >0
-		test		rax, rax
-		loopnz		.loop
-
-		; prepare memcpy (dest)
-		mov			rdi, rsi
-
-		; check neg-flag
-		test		bh, bh
-		jz			.copy
-
-		; neg-flag is ON
-		; --> write '-' to dest[0]
-		mov			byte [rdi], '-'
-		inc			rdi
-
-.copy:
-		; prepare memcpy (size)
-		sub			rcx, 10
-		neg			rcx
-		inc			rcx
-
-		; prepare memcpy (src)
-		mov			rax, rsi
-		mov			rsi, r12
-
-		; do memcpy
-		cld
-		rep movsb
-
-		pop			r12
 		pop			rbx
 		leave
 		ret

@@ -447,6 +447,7 @@ static void test13()
 	puts(ua_pgx(buf, ua_atoul("18446744073709551616")));
 
 	//
+
 	puts(ua_itoa(2147483647, buf));
 	puts(ua_itoa(-2147483648, buf));		// -2147483648: min neg
 	puts(ua_itoa(-1234, buf));
@@ -454,6 +455,23 @@ static void test13()
 	puts(ua_itoa(-1, buf));
 	puts(ua_itoa(0, buf));
 	puts(ua_itoa(-0, buf));
+}
+
+__int128_t f128(__int128_t a)
+{
+	return 1;
+}
+
+static void test14()
+{
+	int l = -2147483648L;
+	int l2 = ~l + 1;
+	int l3 = l * -1;
+
+	__int128_t i128 = 0;
+	i128 += 2;
+
+	i128 = f128(1);
 }
 
 extern void ua_test(long);
@@ -496,6 +514,8 @@ int main(int argc, char** argv, char** envs)
 	test12();
 	puts("|--- 13");
 	test13();
+	puts("|--- 14");
+	test14();
 
 	return 2;
 }
