@@ -53,6 +53,7 @@ extern long ua_atoul(const char *nptr);
 extern void *ua_bt_caller(int deep, void *bp);
 extern void *ua_getsp(void);
 extern char *ua_itoa(int value, char *str);
+extern char *ua_ltoa(long value, char *str);
 extern char *ua_pgx(char *dest, const unsigned long src);
 extern char *ua_pwx(char *dest, const unsigned int src);
 extern char *ua_phx(char *dest, const unsigned short src);
