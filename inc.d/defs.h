@@ -148,6 +148,21 @@ typedef struct
 #define PT_DYNAMIC		2
 #define PT_INTERP		3
 
+// https://qiita.com/nori26/items/9ccef61571602a6a3b45
+
+typedef struct
+{
+	unsigned int    gp_offset;          //汎用レジスタ分のオフセット
+	unsigned int    fp_offset;          //浮動小数点レジスタ分のオフセット
+	void            *overflow_arg_area; //スタック渡し分のアドレス
+	void            *reg_save_area;     //レジスタ渡し分の先頭アドレス
+
+	void            *_fp_save_area;
+	void            *_end_reg_save_area;
+	void            *_end_fp_save_area;
+}
+va_list[1];
+
 
 //
 typedef unsigned long size_t;

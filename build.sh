@@ -42,6 +42,8 @@ gcc ${gccopts} -c src.d/print.c -o obj.d/print.o
 gcc ${gccopts} -c src.d/strcmp.c -o obj.d/strcmp.o
 gcc ${gccopts} -c src.d/strcpy.c -o obj.d/strcpy.o
 gcc ${gccopts} -c src.d/strdup.c -o obj.d/strdup.o
+gcc ${gccopts} -c src.d/va.c -o obj.d/va.o
+
 gcc ${gccopts} -c app.c -o app.o
 gcc ${gccopts} -c app.c -E -P -C -o app.pc
 
@@ -104,9 +106,9 @@ obj.d/strcpy.o \
 obj.d/strdup.o \
 obj.d/strdupa.o \
 obj.d/strlen.o \
-obj.d/test.o \
-\
 obj.d/syscall.o \
+obj.d/test.o \
+obj.d/va.o \
 \
 > app.ls
 

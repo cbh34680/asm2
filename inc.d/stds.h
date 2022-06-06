@@ -30,13 +30,23 @@ extern size_t strlen(const char *s);
 // [3] std library - c
 extern int brk(void *addr);
 extern void free(void *ptr);
+extern double log10(double x);
 extern void *malloc(size_t size);
 extern int strcmp(const char *s1, const char *s2);
 extern char *strdup(const char *s);
 extern char *strcpy(char *dest, const char *src);
 extern int puts(const char* s);
 extern void *sbrk(intptr_t increment);
-extern double log10(double x);
+extern void va_start_(va_list ap, void *last);
+extern void va_end(va_list ap);
+extern double va_arg_f(va_list ap);
+extern unsigned long va_arg_i(va_list ap);
+
+#define va_start(ap, last) va_start_((ap), &last)
+
+#define va_arg(ap, type) (type)_Generic( \
+ ((type) 0), double:va_arg_f, float:va_arg_f, default:va_arg_i)( (ap) )
+
 
 // [4] user func - asm
 extern void *ua_bt_caller(int deep, void *bp);

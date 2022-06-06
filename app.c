@@ -317,70 +317,6 @@ static void test11()
 	puts(ua_pgx(buf, (unsigned long)(bp - bp_first)));
 }
 
-// https://qiita.com/nori26/items/9ccef61571602a6a3b45
-
-typedef struct
-{
-	unsigned int	gp_offset;			//汎用レジスタ分のオフセット
-	unsigned int	fp_offset;			//浮動小数点レジスタ分のオフセット
-	void			*overflow_arg_area;	//スタック渡し分のアドレス
-	void			*reg_save_area;		//レジスタ渡し分の先頭アドレス
-
-	void			*_fp_save_area;
-	void			*_end_reg_save_area;
-	void			*_end_fp_save_area;
-}
-va_list[1];
-
-void va_start_(va_list ap, void *last)
-{
-	void *bp;
-
-	ua_bt_caller(1, &bp);
-
-	ap->gp_offset = 0UL;
-	ap->fp_offset = 0UL;
-
-	ap->overflow_arg_area	= bp + 0x10;
-	ap->reg_save_area		= bp - 0xa8;
-	ap->_fp_save_area		= bp - 0x80;
-
-	// rsi, rdx, rcx, r8, r9
-	ap->_end_reg_save_area	= ap->reg_save_area + ( sizeof(void *) * 5 );
-
-	// xmm0 - 7
-	ap->_end_fp_save_area	= ap->_fp_save_area + ( sizeof(__int128_t) * 8 );
-}
-
-void va_end(va_list ap)
-{
-	ap->gp_offset = 0UL;
-	ap->fp_offset = 0UL;
-
-	ap->overflow_arg_area	= NULL;
-	ap->reg_save_area		= NULL;
-
-	ap->_fp_save_area		= NULL;
-
-	ap->_end_reg_save_area	= NULL;
-	ap->_end_fp_save_area	= NULL;
-}
-
-#define va_start(ap, last) va_start_((ap), &last)
-
-double va_arg_f(va_list ap)
-{
-	return 1;
-}
-
-unsigned long va_arg(va_list ap)
-{
-	return 3;
-}
-
-#define va_arg(ap, type) (type)_Generic( \
-  ((type) 0), double:va_arg_f, float:va_arg_f, default:va_arg)( (ap) )
-
 static unsigned char foo(const char *format, ...)
 {
 	void *bp;
@@ -429,9 +365,30 @@ static unsigned char foo(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	puts(ua_pgx(buf, va_arg(args, int)));
-	puts(ua_pgx(buf, va_arg(args, float)));
+	puts(ua_pbx(buf, va_arg(args, char)));
+	puts(ua_phx(buf, va_arg(args, short)));
+	puts(ua_pbx(buf, va_arg(args, char)));
+	puts(ua_phx(buf, va_arg(args, short)));
+	puts(ua_pwx(buf, va_arg(args, int)));
+
 	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+
+	puts(ua_pwx(buf, va_arg(args, int)));
+	puts(ua_phx(buf, va_arg(args, int)));
+	puts(ua_pgx(buf, va_arg(args, int)));
+	puts(ua_phx(buf, va_arg(args, int)));
+
+	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(buf, va_arg(args, double)));
+
+	puts(ua_pgx(buf, va_arg(args, int)));
 
 	va_end(args);
 
@@ -446,8 +403,17 @@ static void test12()
 	long l = 0x4;
 	char* p = (char*)0x5;
 	double d = 0x6;
+	double d2 = 0xaa;
+	float f = 0x7;
 
-	puts(ua_pbx(buf, foo("", c, c, c, c, 0xff, d, d, d, d, d, d, d, d, i, s, l, p)));
+	foo("",
+		c, s, c, s, 0xff,
+		d, d, d, f, d, d, d, d2,
+		0xee, s, l, 0xbb,
+		(double)0x9999,
+		(double)0x7777,
+		0x1234
+	);
 
 	//foo("", d);
 	//foo("", d, d, d);
