@@ -32,11 +32,13 @@ extern int brk(void *addr);
 extern void free(void *ptr);
 extern double log10(double x);
 extern void *malloc(size_t size);
-extern int strcmp(const char *s1, const char *s2);
-extern char *strdup(const char *s);
+extern char *strcat(char *dest, const char *src);
 extern char *strcpy(char *dest, const char *src);
+extern char *strdup(const char *s);
+extern int strcmp(const char *s1, const char *s2);
 extern int puts(const char* s);
 extern void *sbrk(intptr_t increment);
+extern int sprintf(char *str, const char *format, ...);
 extern void va_start_(va_list ap, void *last);
 extern void va_end(va_list ap);
 extern double va_arg_f(va_list ap);
@@ -77,5 +79,6 @@ extern char edata, etext, end, __bss_start;
 
 #define PAGE_ALIGNED(v) ( ((size_t)(v) + (auxv_data.pagesz - 1)) & ~(auxv_data.pagesz - 1) )
 
+#define MAX(a, b) ( ((a) > (b)) ? (a) : (b) )
 
 #endif

@@ -35,5 +35,8 @@ alloca:
 		; set retval
 		lea			rax, [rsp]
 
+		; for DEBUG
+		REDZONE_MARK
+
 		jmp			[rax]
 

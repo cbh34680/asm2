@@ -459,7 +459,7 @@ static void test13()
 
 static void test14()
 {
-	puts(ua_ltoa( 18446744073709551615, buf));
+	//puts(ua_ltoa( 18446744073709551615, buf));
 	puts(ua_ltoa( 9223372036854775807, buf));
 	puts(ua_ltoa(-9223372036854775807, buf));
 	puts(ua_ltoa( 2147483647, buf));
@@ -469,6 +469,12 @@ static void test14()
 	puts(ua_ltoa(-1, buf));
 	puts(ua_ltoa( 0, buf));
 	puts(ua_ltoa(-0, buf));
+}
+
+static void test15()
+{
+
+	sprintf(buf, "%%aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 }
 
 extern void ua_test(long);
@@ -488,34 +494,36 @@ int main(int argc, char** argv, char** envs)
 		puts(argv[i]);
 	}
 
-	puts("|--- 1");
+	puts("|--- --- --- --- --- --- 1");
 	test1();
-	puts("|--- 2");
+	puts("|--- --- --- --- --- --- 2");
 	test2();
-	puts("|--- 3");
+	puts("|--- --- --- --- --- --- 3");
 	test3();
-	puts("|--- 4");
+	puts("|--- --- --- --- --- --- 4");
 	test4();
-	puts("|--- 5");
+	puts("|--- --- --- --- --- --- 5");
 	test5();
-	puts("|--- 6");
+	puts("|--- --- --- --- --- --- 6");
 	test6();
-	puts("|--- 7");
+	puts("|--- --- --- --- --- --- 7");
 	test7();
-	puts("|--- 8");
+	puts("|--- --- --- --- --- --- 8");
 	test8();
-	puts("|--- 9");
+	puts("|--- --- --- --- --- --- 9");
 	test9();
-	puts("|--- 10");
+	puts("|--- --- --- --- --- --- 10");
 	test10(1, 2, 3);
-	puts("|--- 11");
+	puts("|--- --- --- --- --- --- 11");
 	test11();
-	puts("|--- 12");
+	puts("|--- --- --- --- --- --- 12");
 	test12();
-	puts("|--- 13");
+	puts("|--- --- --- --- --- --- 13");
 	test13();
-	puts("|--- 14");
+	puts("|--- --- --- --- --- --- 14");
 	test14();
+	puts("|--- --- --- --- --- --- 15");
+	test15();
 
 	return 2;
 }
