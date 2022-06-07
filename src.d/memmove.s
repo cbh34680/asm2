@@ -7,8 +7,6 @@ global memmove
 
 ;
 memmove:
-		;enter		0, 0
-
 		add			rdi, rdx
 		dec			rdi
 
@@ -26,5 +24,4 @@ memmove:
 		mov			rax, rdi
 		inc			rax
 
-		;leave
 		ret

@@ -37,8 +37,7 @@ ua_pbx:
 		ret
 
 ;
-ua_pNx_1:
-		enter		0, 0
+ua_pNx_:
 		push		rbx
 
 		; rbx = &outbuf[N] (0 origin)
@@ -73,7 +72,6 @@ ua_pNx_1:
 		mov			rax, rdi
 
 		pop			rbx
-		leave
 		ret
 
 ;
@@ -82,6 +80,9 @@ ua_pNx:
 
 		; backup
 		push		rbx
+
+		; mark stack-overflow
+		REDZONE_MARK
 
 		; rbx = &outbuf[N] (0 origin)
 		lea			rbx, [rbp - 1]
@@ -126,7 +127,11 @@ ua_pNx:
 		cld
 		rep movsb
 
+		; check stack-overflow
+		REDZONE_CHECK
+
 		pop			rbx
+
 		leave
 		ret
 

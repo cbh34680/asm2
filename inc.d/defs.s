@@ -44,3 +44,33 @@
 
 %define STACK_ALIGN_SIZE  0x10
 
+;
+;
+%define ON		1
+
+%macro REDZONE_MARK 0
+
+		;call ua_mark_redzone
+
+  %assign i 1
+
+  %rep 32
+		mov			byte [rsp - i], '.'
+    %assign i i + 1
+  %endrep
+
+%endmacro
+
+%macro REDZONE_CHECK 0
+
+  %assign i 1
+
+  %rep 32
+		cmp			byte [rsp - i], '.'
+		je			$+7
+		call		__stack_chk_fail
+    %assign i i + 1
+  %endrep
+
+%endmacro
+

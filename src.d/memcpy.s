@@ -7,8 +7,6 @@ global memcpy
 
 ;
 memcpy:
-		;enter		0, 0
-
 		mov			rcx, rdx
 		cld
 
@@ -17,5 +15,4 @@ memcpy:
 		mov			rax, rdi
 		sub			rax, rdx
 
-		;leave
 		ret

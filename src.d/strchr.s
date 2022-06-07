@@ -6,8 +6,6 @@ global strchr
 		section		.text
 
 strchr:
-		;enter		0, 0
-
 		lea			rax, [rdi]
 		mov			rcx, rsi
 
@@ -25,5 +23,4 @@ strchr:
 		xor			eax, eax
 
 .end:
-		;leave
 		ret

@@ -1,7 +1,5 @@
 %include "comm.s"
 
-%define ON			1
-
 global ua_atoul
 
 ;

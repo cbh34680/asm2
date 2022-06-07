@@ -1,9 +1,6 @@
 %include "comm.s"
 
-%define ON			1
-
 global ua_ltoa
-extern _HEXCHARS
 
 ;
 		section		.text

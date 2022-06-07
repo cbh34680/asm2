@@ -3,7 +3,6 @@
 global	_start
 
 extern	uc_init
-extern	syscall_exit
 
 ;
 		section		.text

@@ -1,0 +1,6 @@
+extern syscall_read
+extern syscall_write
+extern syscall_open
+extern syscall_close
+extern syscall_brk
+extern syscall_exit
