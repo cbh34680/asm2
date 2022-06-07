@@ -1,4 +1,4 @@
-%include "defs.s"
+%include "comm.s"
 
 ;%define ALIGN_SIZE	0x10
 

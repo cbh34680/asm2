@@ -44,6 +44,3 @@
 
 %define STACK_ALIGN_SIZE  0x10
 
-; data.s
-extern _HEXCHARS
-

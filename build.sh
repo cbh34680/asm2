@@ -18,7 +18,10 @@ gccopts="${gccopts} -ffreestanding"
 gccopts="${gccopts} -fno-asynchronous-unwind-tables"
 gccopts="${gccopts} -fno-pic"
 gccopts="${gccopts} -fno-pie"
+
 gccopts="${gccopts} -fno-stack-protector"
+#gccopts="${gccopts} -fstack-protector-strong"
+#gccopts="${gccopts} -fstack-protector-all"
 
 gccopts="${gccopts} -m64"
 gccopts="${gccopts} -masm=intel"
@@ -57,6 +60,7 @@ nasm ${nasmopts} src.d/alloca.s -o obj.d/alloca.o
 nasm ${nasmopts} src.d/atoi.s -o obj.d/atoi.o
 nasm ${nasmopts} src.d/atoul.s -o obj.d/atoul.o
 nasm ${nasmopts} src.d/data.s -o obj.d/data.o
+nasm ${nasmopts} src.d/debg.s -o obj.d/debg.o
 nasm ${nasmopts} src.d/itoa.s -o obj.d/itoa.o
 nasm ${nasmopts} src.d/ltoa.s -o obj.d/ltoa.o
 nasm ${nasmopts} src.d/memchr.s -o obj.d/memchr.o
@@ -93,6 +97,7 @@ obj.d/atoi.o \
 obj.d/atoul.o \
 obj.d/brk.o \
 obj.d/data.o \
+obj.d/debg.o \
 obj.d/init.o \
 obj.d/itoa.o \
 obj.d/ltoa.o \

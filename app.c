@@ -475,6 +475,9 @@ extern void ua_test(long);
 
 int main(int argc, char** argv, char** envs)
 {
+	//extern void __stack_chk_fail();
+	//__stack_chk_fail();
+
 	char s[1024];
 
 	ua_test(-1);

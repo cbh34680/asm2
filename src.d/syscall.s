@@ -1,4 +1,4 @@
-%include "defs.s"
+%include "comm.s"
 
 	section	.text
 ;

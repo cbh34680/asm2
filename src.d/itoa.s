@@ -1,4 +1,4 @@
-%include "defs.s"
+%include "comm.s"
 
 %define ON			1
 
@@ -10,6 +10,8 @@ extern _HEXCHARS
 
 ua_itoa:
 		enter		0x10, 0
+
+		;call ua_mark_redzone
 
 		; backup
 		push		rbx

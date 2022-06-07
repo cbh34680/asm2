@@ -1,4 +1,4 @@
-%include "defs.s"
+%include "comm.s"
 
 ;bits 64
 global ua_test

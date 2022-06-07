@@ -1,4 +1,4 @@
-%include "defs.s"
+%include "comm.s"
 
 global ua_pgx
 global ua_pwx
@@ -37,7 +37,7 @@ ua_pbx:
 		ret
 
 ;
-ua_pNx:
+ua_pNx_1:
 		enter		0, 0
 		push		rbx
 
@@ -71,6 +71,60 @@ ua_pNx:
 
 .end:
 		mov			rax, rdi
+
+		pop			rbx
+		leave
+		ret
+
+;
+ua_pNx:
+		enter		0x20, 0
+
+		; backup
+		push		rbx
+
+		; rbx = &outbuf[N] (0 origin)
+		lea			rbx, [rbp - 1]
+
+		; outbuf[N + 1] = '\0'
+		mov			byte [rbx], 0x0
+
+.loop:
+		; outpos--
+		dec			rbx
+
+		; rax: input
+		mov			rax, rsi
+
+		; last 8bit
+		and			eax, 0xf
+
+		; load char
+		mov			al, _HEXCHARS[rax]
+
+		; store
+		mov			[rbx], al
+
+		; rax: input = input >> 4
+		shr			rsi, 4
+
+		; repeat (max)rcx times
+		loopnz		.loop
+
+.copy:
+		; save addr
+		mov			rax, rdi
+
+		; prepare memcpy (src)
+		mov			rsi, rbx
+
+		; prepare memcpy (size)
+		mov			rcx, rbp
+		sub			rcx, rbx
+
+		; do memcpy
+		cld
+		rep movsb
 
 		pop			rbx
 		leave
