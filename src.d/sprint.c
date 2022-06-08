@@ -16,6 +16,14 @@ enum width_type
 	WT_LONG,
 };
 
+enum number_format
+{
+	NF_DECIMAL		= 0,
+	NF_BINARY,
+	NF_OCTAL,
+	NF_HEXA,
+};
+
 struct data_st
 {
 	union
@@ -31,24 +39,30 @@ struct data_st
 
 	enum value_type vt;
 	enum width_type wt;
+	enum number_format nf;
 };
 
-static void set_data(char type, va_list args, struct data_st *data)
+static void set_data(char type, __builtin_va_list ap, struct data_st *data)
 {
 	switch (type)
 	{
-		case 'd':
 		case 'x':
+		{
+			data->nf = NF_HEXA;
+
+			// fall through
+		}
+		case 'd':
 		{
 			data->vt = VT_INT;
 
 			if (data->wt == WT_LONG)
 			{
-				data->val.l = va_arg(args, long);
+				data->val.l = __builtin_va_arg(ap, long);
 			}
 			else
 			{
-				data->val.i = va_arg(args, int);
+				data->val.i = __builtin_va_arg(ap, int);
 			}
 
 			break;
@@ -57,14 +71,14 @@ static void set_data(char type, va_list args, struct data_st *data)
 		case 'c':
 		{
 			data->vt = VT_CHAR;
-			data->val.c = va_arg(args, char);
+			data->val.c = (char)__builtin_va_arg(ap, int);
 			break;
 		}
 
 		case 's':
 		{
 			data->vt = VT_STRING;
-			data->val.s = va_arg(args, char *);
+			data->val.s = __builtin_va_arg(ap, char *);
 			break;
 		}
 	}
@@ -75,7 +89,38 @@ static size_t val_strlen(struct data_st *data)
 	switch (data->vt)
 	{
 		case VT_INT:
-			return (data->wt == WT_LONG) ?  20 : 10;
+			//
+			// 1234567890123456789012
+			// --------------------------------------
+			// 2147483647
+			// 4294967295
+			// 9223372036854775807
+			// 18446744073709551615
+			//
+			switch (data->wt)
+			{
+				case WT_LONG: // 64bit
+				{
+					switch (data->nf)
+					{
+						case NF_DECIMAL:	return 20;
+						case NF_HEXA:		return 16;
+					}
+
+					break;
+				}
+
+				case WT_NONE: // 32bit
+				{
+					switch (data->nf)
+					{
+						case NF_DECIMAL:	return 10;
+						case NF_HEXA:		return 8;
+					}
+
+					break;
+				}
+			}
 
 		case VT_CHAR:
 			return 1;
@@ -87,23 +132,71 @@ static size_t val_strlen(struct data_st *data)
 	return 0;
 }
 
-int sprintf(char *str, const char *format, ...)
+static void write_data(char *buff, const struct data_st *data)
 {
-	va_list args;
-	va_start(args, format);
+	switch (data->vt)
+	{
+		case VT_CHAR:
+			buff[0] = data->val.c;
+			buff[1] = '\0';
+			break;
 
+		case VT_STRING:
+			strcpy(buff, data->val.s);
+			break;
+
+		case VT_INT:
+		{
+			switch (data->wt)
+			{
+				case WT_LONG: // 64bit
+				{
+					switch (data->nf)
+					{
+						case NF_DECIMAL:	ua_ltoa(data->val.l, buff);	break;
+						case NF_HEXA:		ua_pgx(buff, data->val.l);	break;
+					}
+
+					break;
+				}
+
+				case WT_NONE: // 32bit
+				{
+					switch (data->nf)
+					{
+						case NF_DECIMAL:	ua_itoa(data->val.i, buff);	break;
+						case NF_HEXA:		ua_pwx(buff, data->val.i);	break;
+					}
+
+					break;
+				}
+			}
+
+			break;
+		}
+	}
+}
+
+int vsprintf(char *str, const char *format, va_list ap)
+{
 	_Bool pholder = 0;
 
 	struct data_st data = { 0 };
 	char ignstr[3] = "%.";
 
-	char *outbuf = NULL;
+	char *opos = str;
+	if (str)
+	{
+		*opos = '\0';
+	}
 
-	for (const char *pos=format; *pos; pos++)
+	size_t vallen = 0;
+
+	for (const char *ipos=format; *ipos; ipos++)
 	{
 		if (pholder)
 		{
-			switch (*pos)
+			switch (*ipos)
 			{
 				case 'l':
 				{
@@ -123,20 +216,20 @@ int sprintf(char *str, const char *format, ...)
 				case 'x':
 				case 's':
 				{
-					set_data(*pos, args, &data);
+					set_data(*ipos, ap, &data);
 					break;
 				}
 
 				default:
 				{
 					data.vt = VT_STRING;
-					ignstr[1] = *pos;
+					ignstr[1] = *ipos;
 					data.val.s = ignstr;
 					break;
 				}
 			}
 		}
-		else if (*pos == '%')
+		else if (*ipos == '%')
 		{
 			pholder = 1;
 			continue;
@@ -144,37 +237,72 @@ int sprintf(char *str, const char *format, ...)
 		else
 		{
 			data.vt = VT_CHAR;
-			data.val.c = *pos;
+			data.val.c = *ipos;
 		}
 
-		size_t need = val_strlen(&data) + /* '\0' */1;
-		assert(need >= 2);
-
-		if (! outbuf)
+		if (opos)
 		{
-			outbuf = alloca(need);
-			strcpy(outbuf, "");
+			// write to buffer
+
+			write_data(opos, &data);
+			opos += strlen(opos);
 		}
-
-		char *term = outbuf + strlen(outbuf);
-		char *sp = ua_getsp();
-		size_t remaining = term - sp - /* '\0' */1;
-
-		if (remaining < need)
+		else
 		{
-			alloca(need - remaining);
+			vallen += val_strlen(&data);
 		}
 
-		sp = ua_getsp();
-		remaining = term - sp - /* '\0' */1;
+		// reset %..
+		pholder = 0;
 
-		assert(remaining >= need);
-
-
+		// clear data
+		memset(&data, '\0', sizeof(data));
 	}
 
-	va_end(args);
+	if (str)
+	{
+		return strlen(str);
+	}
 
-	return 0;
+	return vallen;
+}
+
+int sprintf(char *str, const char *format, ...)
+{
+	__builtin_va_list ap;
+	__builtin_va_start(ap, format);
+
+	const int len = vsprintf(str, format, ap);
+
+	__builtin_va_end(ap);
+
+	return len;
+}
+
+static int printf_(int len, const char *format, va_list ap2)
+{
+	char str[len + 1];
+	//char *str = alloca(len + 1);
+
+	const int r = vsprintf(str, format, ap2);
+	uc_prints(str);
+
+	return r;
+}
+
+int printf(const char *format, ...)
+{
+	__builtin_va_list ap, ap2;
+
+	__builtin_va_start(ap, format);
+	__builtin_va_copy(ap2, ap);
+
+	const int len = vsprintf(NULL, format, ap);
+	__builtin_va_end(ap);
+
+	const int r = printf_(len, format, ap2);
+	__builtin_va_end(ap2);
+
+	return r;
 }
 

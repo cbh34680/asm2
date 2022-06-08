@@ -19,9 +19,10 @@ set verbose on
 
 tui enable
 
-layout asm
-#layout src
+layout src
+#layout asm
 layout regs
+
 #layout split
 
 # https://stackoverflow.com/questions/38803783/how-to-automatically-refresh-gdb-in-tui-mode
@@ -41,8 +42,8 @@ define hook-continue
   refresh
 end
 
-b _start
-#b main
+#b _start
+b main
 #b ua_test
 
 run

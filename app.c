@@ -24,12 +24,10 @@ static void test1()
 	char* d1 = alloca(16);
 	const void* s2 = ua_getsp();
 
-	assert(s2 == d1);
+	assert(s1 == d1);
 	assert((s1 - s2) == 16);
 
-	puts(ua_pgx(buf, (unsigned long)s1));
-	puts(ua_pgx(buf, (unsigned long)d1));
-	puts(ua_pgx(buf, (unsigned long)s2));
+	printf("s1=0x%lx d1=0x%lx s2=0x%lx\n");
 
 	puts(memset(buf, '@', 15));
 	buf[15]= '\0';
@@ -39,7 +37,9 @@ static void test1()
 
 	// https://qiita.com/EqualL2/items/168e083caa5f07a1105b
 
-	int x = log10(255) + 1;
+	int n = 255;
+	int x = log10(n) + 1;
+	printf("log10(%d)+1 = %d\n", n, x);
 }
 
 static void test2()
@@ -76,25 +76,19 @@ static void test4()
 	puts("   0123456789012345678");
 
 	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	uc_prints("0x[");
-	uc_prints(ua_pgx(buf, -2));
-	puts("]");
+	printf("0x[%lx]\n", -2);
 
 	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	uc_prints("0x[");
-	uc_prints(ua_pwx(buf, 2));
-	puts("]");
+	printf("0x[%x]\n", 12312312);
 
 	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	uc_prints("0x[");
-	uc_prints(ua_phx(buf, 5));
-	puts("]");
+	printf("0x[%s]\n", ua_phx(buf, 143));
 }
 
 static void test5()
 {
 	int x = atoi("111a");
-	puts(ua_pwx(buf, x));
+	printf("%d\n", x);
 
 /*
 	puts("==========");
@@ -285,9 +279,7 @@ static void test10(long a, long b, long c)
 	const void* d1 = strdupa("HEllO wOrlD");
 	const void* s2 = ua_getsp();
 
-	puts(ua_pgx(buf, (unsigned long)s1));
-	puts(ua_pgx(buf, (unsigned long)d1));
-	puts(ua_pgx(buf, (unsigned long)s2));
+	printf("s1=0x%lx\nd1=0x%lx '%s'\ns2=0x%lx\n", s1, d1, d1, s2);
 
 	puts(d1);
 
@@ -309,14 +301,13 @@ static void test11()
 			bp_first = bp;
 		}
 
-		uc_prints(ua_pgx(buf, (unsigned long)caller));
-		uc_prints("\t");
-		puts(ua_pgx(buf, (unsigned long)bp));
+		printf("%lx\t%lx\n", caller, bp);
 	}
 
-	puts(ua_pgx(buf, (unsigned long)(bp - bp_first)));
+	printf("0x%lx (%d)\n", bp-bp_first, bp-bp_first);
 }
 
+#if 0
 static unsigned char va_test_raw(const char *_nouse, ...)
 {
 	void *bp;
@@ -362,12 +353,16 @@ static unsigned char va_test_raw(const char *_nouse, ...)
 
 	return al;
 }
+#endif
 
-static void va_test(const char *format, ...)
+#if 0
+static void va_test_va(const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
 
+	va_arg(args, int);
+/*
 	puts(ua_pbx(buf, va_arg(args, char)));
 	puts(ua_phx(buf, va_arg(args, short)));
 	puts(ua_pbx(buf, va_arg(args, char)));
@@ -392,9 +387,12 @@ static void va_test(const char *format, ...)
 	puts(ua_pgx(buf, va_arg(args, double)));
 
 	puts(ua_pgx(buf, va_arg(args, int)));
+*/
 
 	va_end(args);
 }
+#endif
+
 
 static void test12()
 {
@@ -407,6 +405,7 @@ static void test12()
 	double d2 = 0xaa;
 	float f = 0x7;
 
+/*
 	puts(ua_pbx(buf, va_test_raw("",
 		c, s, c, s, 0xff,
 		d, d, d, f, d, d, d, d2,
@@ -415,9 +414,10 @@ static void test12()
 		(double)0x7777,
 		0x1234
 	)));
-
+*/
+/*
 	puts("[va_test]");
-	va_test("",
+	va_test_va("",
 		c, s, c, s, 0xff,
 		d, d, d, f, d, d, d, d2,
 		0xee, s, l, 0xbb,
@@ -425,6 +425,7 @@ static void test12()
 		(double)0x7777,
 		0x1234
 	);
+*/
 }
 
 static void test13()
@@ -473,8 +474,29 @@ static void test14()
 
 static void test15()
 {
+	const char format[] = "%lx";
 
-	sprintf(buf, "%%aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	const int n1 = sprintf(NULL, format, -1L);
+	const int n2 = sprintf(buf,  format, -1L);
+
+	puts(buf);
+
+	printf("n1 = %d\n", n1);
+	printf("n2 = %d\n", n2);
+
+	assert(n1 >= n2);
+}
+
+static void test16()
+{
+	char buf[32] = { 0 };
+
+	memset(buf, '_', sizeof(buf) - 1);
+
+	char *s = alloca(16);
+	memset(s, 'A', 16);
+
+int iii = 0;
 }
 
 extern void ua_test(long);
@@ -490,40 +512,41 @@ int main(int argc, char** argv, char** envs)
 	ua_test(-1L);
 
 	for (int i=0; i<argc; i++) {
-		uc_prints("argv=");
-		puts(argv[i]);
+		printf("argv[%d] = '%s'\n", i, argv[i]);
 	}
 
-	puts("|--- --- --- --- --- --- 1");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
 	test1();
-	puts("|--- --- --- --- --- --- 2");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
 	test2();
-	puts("|--- --- --- --- --- --- 3");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3");
 	test3();
-	puts("|--- --- --- --- --- --- 4");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 4");
 	test4();
-	puts("|--- --- --- --- --- --- 5");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 5");
 	test5();
-	puts("|--- --- --- --- --- --- 6");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 6");
 	test6();
-	puts("|--- --- --- --- --- --- 7");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 7");
 	test7();
-	puts("|--- --- --- --- --- --- 8");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 8");
 	test8();
-	puts("|--- --- --- --- --- --- 9");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 9");
 	test9();
-	puts("|--- --- --- --- --- --- 10");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 10");
 	test10(1, 2, 3);
-	puts("|--- --- --- --- --- --- 11");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 11");
 	test11();
-	puts("|--- --- --- --- --- --- 12");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 12");
 	test12();
-	puts("|--- --- --- --- --- --- 13");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 13");
 	test13();
-	puts("|--- --- --- --- --- --- 14");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 14");
 	test14();
-	puts("|--- --- --- --- --- --- 15");
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 15");
 	test15();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 16");
+	test16();
 
 	return 2;
 }

@@ -3,14 +3,26 @@
 void va_start_(va_list ap, void *last)
 {
 	void *bp;
-
 	ua_bt_caller(1, &bp);
 
-	ap->gp_offset = 0UL;
-	ap->fp_offset = 0UL;
+#if 0
+	const size_t named_argc = (( (unsigned long)(bp - last) ) - 0xd0) >> 3;
+	void *reg_save_area = last + ( (named_argc + 2) << 4 );
+
+	ap->_named_argc	= named_argc;
+#endif
+	void *reg_save_area	= bp + 0x10;
+	void *fp_save_area	= bp + 0xb0;
+
+	//
+	ap->gp_offset	= 0UL;
+	ap->fp_offset	= 0UL;
 
 	ap->overflow_arg_area	= bp + 0x10;
+#if 0
 	ap->reg_save_area		= bp - 0xa8;
+#endif
+	ap->reg_save_area		= reg_save_area;
 	ap->_fp_save_area		= bp - 0x80;
 
 	// rsi, rdx, rcx, r8, r9

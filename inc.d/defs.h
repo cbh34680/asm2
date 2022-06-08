@@ -148,6 +148,10 @@ typedef struct
 #define PT_DYNAMIC		2
 #define PT_INTERP		3
 
+typedef unsigned long size_t;
+typedef long ssize_t;
+typedef unsigned short mode_t;
+
 // https://qiita.com/nori26/items/9ccef61571602a6a3b45
 
 typedef struct
@@ -160,14 +164,10 @@ typedef struct
 	void            *_fp_save_area;
 	void            *_end_reg_save_area;
 	void            *_end_fp_save_area;
+
+	size_t			_named_argc;
 }
 va_list[1];
-
-
-//
-typedef unsigned long size_t;
-typedef long ssize_t;
-typedef unsigned short mode_t;
 
 //
 struct auxv_data_type

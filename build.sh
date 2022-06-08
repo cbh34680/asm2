@@ -14,7 +14,7 @@ gccopts="${gccopts} -g -O0"
 #gccopts="${gccopts} -static"
 
 gccopts="${gccopts} -ffreestanding"
-#gccopts="${gccopts} -fno-builtin"
+gccopts="${gccopts} -fno-builtin"
 gccopts="${gccopts} -fno-asynchronous-unwind-tables"
 gccopts="${gccopts} -fno-pic"
 gccopts="${gccopts} -fno-pie"
@@ -44,9 +44,9 @@ gcc ${gccopts} -c src.d/malloc.c -o obj.d/malloc.o
 gcc ${gccopts} -c src.d/print.c -o obj.d/print.o
 gcc ${gccopts} -c src.d/sprint.c -o obj.d/sprint.o
 gcc ${gccopts} -c src.d/str.c -o obj.d/str.o
-gcc ${gccopts} -c src.d/va.c -o obj.d/va.o
+#gcc ${gccopts} -c src.d/va.c -o obj.d/va.o
 
-gcc ${gccopts} -c app.c -o app.o
+gcc ${gccopts} -c app.c -o app.o -v
 gcc ${gccopts} -c app.c -E -P -C -o app.pc
 
 #gcc ${gccopts} -shared -fPIC libmy.c -o libmy.so
@@ -117,9 +117,9 @@ obj.d/strdupa.o \
 obj.d/strlen.o \
 obj.d/syscall.o \
 obj.d/test.o \
-obj.d/va.o \
 \
 > app.ls
+
 
 export LD_LIBRARY_PATH=.
 ./app.exe || echo $?

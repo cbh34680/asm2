@@ -36,9 +36,14 @@ extern char *strcat(char *dest, const char *src);
 extern char *strcpy(char *dest, const char *src);
 extern char *strdup(const char *s);
 extern int strcmp(const char *s1, const char *s2);
+extern int printf(const char *format, ...);
 extern int puts(const char* s);
 extern void *sbrk(intptr_t increment);
 extern int sprintf(char *str, const char *format, ...);
+extern int vsprintf(char *str, const char *format, va_list ap);
+
+//extern int sprintf(const char *format, ...);
+/*
 extern void va_start_(va_list ap, void *last);
 extern void va_end(va_list ap);
 extern double va_arg_f(va_list ap);
@@ -48,6 +53,7 @@ extern unsigned long va_arg_i(va_list ap);
 
 #define va_arg(ap, type) (type)_Generic( \
  ((type) 0), double:va_arg_f, float:va_arg_f, default:va_arg_i)( (ap) )
+*/
 
 
 // [4] user func - asm
@@ -81,4 +87,10 @@ extern char edata, etext, end, __bss_start;
 
 #define MAX(a, b) ( ((a) > (b)) ? (a) : (b) )
 
+//
+
+
+
+
 #endif
+

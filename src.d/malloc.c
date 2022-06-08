@@ -213,7 +213,7 @@ void uc_walk_freep(
 					cb_freep(pb+1, (pb->s.size - 1) * sizeof(Header));
 				}
 
-				break;
+				goto NEXT_LOOP;
 			}
 
 			if (pf->s.ptr == freep)
@@ -225,9 +225,14 @@ void uc_walk_freep(
 					cb_alloc(pb+1, (pb->s.size - 1) * sizeof(Header));
 				}
 
-				break;
+				goto NEXT_LOOP;
 			}
 		}
+
+		assert(0);
+
+NEXT_LOOP:
+		;
 	}
 }
 
