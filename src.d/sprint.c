@@ -84,7 +84,7 @@ static void set_data(char type, __builtin_va_list ap, struct data_st *data)
 	}
 }
 
-static size_t val_strlen(struct data_st *data)
+static size_t val_strlen(struct data_st const *data)
 {
 	switch (data->vt)
 	{
@@ -177,7 +177,7 @@ static void write_data(char *buff, const struct data_st *data)
 	}
 }
 
-int vsprintf(char *str, const char *format, va_list ap)
+int vsprintf(char *str, const char *format, __builtin_va_list ap)
 {
 	_Bool pholder = 0;
 
@@ -279,17 +279,6 @@ int sprintf(char *str, const char *format, ...)
 	return len;
 }
 
-static int printf_(int len, const char *format, va_list ap2)
-{
-	char str[len + 1];
-	//char *str = alloca(len + 1);
-
-	const int r = vsprintf(str, format, ap2);
-	uc_prints(str);
-
-	return r;
-}
-
 int printf(const char *format, ...)
 {
 	__builtin_va_list ap, ap2;
@@ -300,8 +289,13 @@ int printf(const char *format, ...)
 	const int len = vsprintf(NULL, format, ap);
 	__builtin_va_end(ap);
 
-	const int r = printf_(len, format, ap2);
+	char str[len + 1];
+	//char *str = alloca(len + 1);
+
+	const int r = vsprintf(str, format, ap2);
 	__builtin_va_end(ap2);
+
+	uc_prints(str);
 
 	return r;
 }

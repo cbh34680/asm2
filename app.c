@@ -1,6 +1,6 @@
 #include <stds.h>
 
-char buf[1024];
+char gbuf[1024];
 
 static void test1()
 {
@@ -29,11 +29,11 @@ static void test1()
 
 	printf("s1=0x%lx d1=0x%lx s2=0x%lx\n");
 
-	puts(memset(buf, '@', 15));
-	buf[15]= '\0';
+	puts(memset(gbuf, ',', 15));
+	gbuf[15]= '\0';
 
 	puts("123456789012345678901234567890");
-	puts(buf);
+	puts(gbuf);
 
 	// https://qiita.com/EqualL2/items/168e083caa5f07a1105b
 
@@ -75,14 +75,14 @@ static void test4()
 	puts("   1234567890123456789");
 	puts("   0123456789012345678");
 
-	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	strcpy(gbuf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 	printf("0x[%lx]\n", -2);
 
-	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	strcpy(gbuf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 	printf("0x[%x]\n", 12312312);
 
-	strcpy(buf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	printf("0x[%s]\n", ua_phx(buf, 143));
+	strcpy(gbuf, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	printf("0x[%s]\n", ua_phx(gbuf, 143));
 }
 
 static void test5()
@@ -95,9 +95,9 @@ static void test5()
 
 	for (int i=0; i<8192; i++)
 	{
-		uc_prints(ua_phx(buf, i));
+		uc_prints(ua_phx(gbuf, i));
 		uc_prints("=");
-		puts(ua_phx(buf, PAGE_ALIGNED(i)));
+		puts(ua_phx(gbuf, PAGE_ALIGNED(i)));
 	}
 
 	puts("==========");
@@ -106,15 +106,13 @@ static void test5()
 
 static void test6()
 {
-	puts(ua_phx(buf, memcmp("032", "022", 4)));
-	puts(ua_phx(buf, memcmp("022", "022", 4)));
-	puts(ua_phx(buf, memcmp("012", "022", 4)));
+	printf("%d\n", memcmp("032", "022", 4));
+	printf("%d\n", memcmp("022", "022", 4));
+	printf("%d\n", memcmp("012", "022", 4));
 
-	puts(ua_phx(buf, strcmp("032", "022")));
-	puts(ua_phx(buf, strcmp("022", "022")));
-	puts(ua_phx(buf, strcmp("012", "022")));
-
-
+	printf("%d\n", strcmp("032", "022"));
+	printf("%d\n", strcmp("022", "022"));
+	printf("%d\n", strcmp("012", "022"));
 }
 
 int global_data1 = 100;
@@ -125,54 +123,32 @@ int global_bss2;
 
 static void test7()
 {
-	uc_prints("test7=");
-	puts(ua_pgx(buf, (unsigned long)test7));
-	uc_prints("etext=");
-	puts(ua_pgx(buf, (unsigned long)&etext));
-	uc_prints("global_data1=");
-	puts(ua_pgx(buf, (unsigned long)&global_data1));
-	uc_prints("global_data2=");
-	puts(ua_pgx(buf, (unsigned long)&global_data2));
-	uc_prints("edata=");
-	puts(ua_pgx(buf, (unsigned long)&edata));
-	uc_prints("__bss_start=");
-	puts(ua_pgx(buf, (unsigned long)&__bss_start));
-	uc_prints("global_bss1=");
-	puts(ua_pgx(buf, (unsigned long)&global_bss1));
-	uc_prints("global_bss2=");
-	puts(ua_pgx(buf, (unsigned long)&global_bss2));
-	uc_prints("end=");
-	puts(ua_pgx(buf, (unsigned long)&end));
+	printf("test7=%lx\n", test7);
+	printf("etext=%lx\n", &etext);
+	printf("global_data1=%lx\n", &global_data1);
+	printf("global_data2=%lx\n", &global_data2);
+	printf("edata=%lx\n", &edata);
+	printf("__bss_start=%lx\n", &__bss_start);
+	printf("global_bss1=%lx\n", &global_bss1);
+	printf("global_bss2=%lx\n", &global_bss2);
+	printf("end=%lx\n", &end);
 }
 
 static void prt_(const char *name, const void *pos)
 {
-	uc_prints("[");
-	uc_prints(name);
-	uc_prints("]\t");
-
-		uc_prints("\t");
-		uc_prints(ua_pgx(buf, (unsigned long)pos));
-
-		puts("");
+	printf("[%s]\t\t%lx\n", name, pos);
 }
 
 #define prt(v) prt_(#v, (v))
 
 static void cb_freep(const void *mem, size_t siz)
 {
-	uc_prints("\tfreep: ");
-	uc_prints(ua_pgx(buf, (unsigned long)mem));
-	uc_prints(", ");
-	puts(ua_pgx(buf, siz));
+	printf("\tfreep: %lx, %lx\n", mem, siz);
 }
 
 static void cb_alloc(const void *mem, size_t siz)
 {
-	uc_prints("\talloc: ");
-	uc_prints(ua_pgx(buf, (unsigned long)mem));
-	uc_prints(", ");
-	puts(ua_pgx(buf, siz));
+	printf("\talloc: %lx, %lx\n", mem, siz);
 }
 
 void uc_walk_freep(
@@ -250,26 +226,22 @@ static void test9()
 	void *curr = NULL;
 	void *prev = NULL;
 
-	for (int i=0; i<20; i++)
+	for (int i=0; i<20; i++, prev=curr)
 	{
 		curr = sbrk(0);
 
 		if (curr == prev)
 		{
-			uc_prints("                       ");
+			printf("                       ");
 		}
 		else
 		{
-			uc_prints("before=");
-			uc_prints(ua_pgx(buf, (unsigned long)curr));
+			printf("before=%lx\n", curr);
 		}
 
 		void *p = malloc(4000);
 
-		uc_prints(" after=");
-		puts(ua_pgx(buf, (unsigned long)p));
-
-		prev = curr;
+		printf(" after=%lx\n", p);
 	}
 }
 
@@ -330,17 +302,17 @@ static unsigned char va_test_raw(const char *_nouse, ...)
 	for (int i=0; i<5; i++)
 	{
 		unsigned long *ul = (unsigned long *)&ul_a[i];
-		puts(ua_pgx(buf, *ul));
+		puts(ua_pgx(gbuf, *ul));
 	}
 
 	puts("[xmm]");
-	puts(ua_pbx(buf, al));
+	puts(ua_pbx(gbuf, al));
 	__uint128_t *ui128_a = (__uint128_t *)(bp - 0x80);
 	for (int i=0; i<al; i++)
 	{
 		//double *dp = (double *)&ui128_a[i];
 		unsigned long *dp = (unsigned long *)&ui128_a[i];
-		puts(ua_pgx(buf, *dp));
+		puts(ua_pgx(gbuf, *dp));
 	}
 
 	puts("[stack]");
@@ -348,7 +320,7 @@ static unsigned char va_test_raw(const char *_nouse, ...)
 	for (int i=0; i<4; i++)
 	{
 		unsigned long *ul = (unsigned long *)&ul_a[i];
-		puts(ua_pgx(buf, *ul));
+		puts(ua_pgx(gbuf, *ul));
 	}
 
 	return al;
@@ -363,30 +335,30 @@ static void va_test_va(const char *format, ...)
 
 	va_arg(args, int);
 /*
-	puts(ua_pbx(buf, va_arg(args, char)));
-	puts(ua_phx(buf, va_arg(args, short)));
-	puts(ua_pbx(buf, va_arg(args, char)));
-	puts(ua_phx(buf, va_arg(args, short)));
-	puts(ua_pwx(buf, va_arg(args, int)));
+	puts(ua_pbx(gbuf, va_arg(args, char)));
+	puts(ua_phx(gbuf, va_arg(args, short)));
+	puts(ua_pbx(gbuf, va_arg(args, char)));
+	puts(ua_phx(gbuf, va_arg(args, short)));
+	puts(ua_pwx(gbuf, va_arg(args, int)));
 
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
 
-	puts(ua_pwx(buf, va_arg(args, int)));
-	puts(ua_phx(buf, va_arg(args, int)));
-	puts(ua_pgx(buf, va_arg(args, int)));
-	puts(ua_phx(buf, va_arg(args, int)));
+	puts(ua_pwx(gbuf, va_arg(args, int)));
+	puts(ua_phx(gbuf, va_arg(args, int)));
+	puts(ua_pgx(gbuf, va_arg(args, int)));
+	puts(ua_phx(gbuf, va_arg(args, int)));
 
-	puts(ua_pgx(buf, va_arg(args, double)));
-	puts(ua_pgx(buf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
+	puts(ua_pgx(gbuf, va_arg(args, double)));
 
-	puts(ua_pgx(buf, va_arg(args, int)));
+	puts(ua_pgx(gbuf, va_arg(args, int)));
 */
 
 	va_end(args);
@@ -406,7 +378,7 @@ static void test12()
 	float f = 0x7;
 
 /*
-	puts(ua_pbx(buf, va_test_raw("",
+	puts(ua_pbx(gbuf, va_test_raw("",
 		c, s, c, s, 0xff,
 		d, d, d, f, d, d, d, d2,
 		0xee, s, l, 0xbb,
@@ -430,46 +402,46 @@ static void test12()
 
 static void test13()
 {
-	puts(ua_pwx(buf, atoi("10")));
-	puts(ua_pwx(buf, atoi("-10")));
-	puts(ua_pgx(buf, ua_atoul("10")));
-	puts(ua_pgx(buf, ua_atoul("-10")));
+	puts(ua_pwx(gbuf, atoi("10")));
+	puts(ua_pwx(gbuf, atoi("-10")));
+	puts(ua_pgx(gbuf, ua_atoul("10")));
+	puts(ua_pgx(gbuf, ua_atoul("-10")));
 
 	puts("* 1");
-	puts(ua_pwx(buf, atoi("4294967295")));		// UI max
-	puts(ua_pwx(buf, atoi("4294967296")));
+	puts(ua_pwx(gbuf, atoi("4294967295")));		// UI max
+	puts(ua_pwx(gbuf, atoi("4294967296")));
 
 	puts("* 2");
-	puts(ua_pgx(buf, ua_atoul("4294967295")));		// UI max
-	puts(ua_pgx(buf, ua_atoul("4294967296")));
+	puts(ua_pgx(gbuf, ua_atoul("4294967295")));		// UI max
+	puts(ua_pgx(gbuf, ua_atoul("4294967296")));
 
 	puts("* 3");
-	puts(ua_pgx(buf, ua_atoul("18446744073709551615")));	// UL max
-	puts(ua_pgx(buf, ua_atoul("18446744073709551616")));
+	puts(ua_pgx(gbuf, ua_atoul("18446744073709551615")));	// UL max
+	puts(ua_pgx(gbuf, ua_atoul("18446744073709551616")));
 
 	//
 
-	puts(ua_itoa( 2147483647, buf));
-	puts(ua_itoa(-2147483648, buf));		// -2147483648: min neg
-	puts(ua_itoa(-1234, buf));
-	puts(ua_itoa( 1234, buf));
-	puts(ua_itoa(-1, buf));
-	puts(ua_itoa( 0, buf));
-	puts(ua_itoa(-0, buf));
+	puts(ua_itoa( 2147483647, gbuf));
+	puts(ua_itoa(-2147483648, gbuf));		// -2147483648: min neg
+	puts(ua_itoa(-1234, gbuf));
+	puts(ua_itoa( 1234, gbuf));
+	puts(ua_itoa(-1, gbuf));
+	puts(ua_itoa( 0, gbuf));
+	puts(ua_itoa(-0, gbuf));
 }
 
 static void test14()
 {
-	//puts(ua_ltoa( 18446744073709551615, buf));
-	puts(ua_ltoa( 9223372036854775807, buf));
-	puts(ua_ltoa(-9223372036854775807, buf));
-	puts(ua_ltoa( 2147483647, buf));
-	puts(ua_ltoa(-2147483648, buf));		// -2147483648: min neg
-	puts(ua_ltoa(-1234, buf));
-	puts(ua_ltoa( 1234, buf));
-	puts(ua_ltoa(-1, buf));
-	puts(ua_ltoa( 0, buf));
-	puts(ua_ltoa(-0, buf));
+	//puts(ua_ltoa( 18446744073709551615, gbuf));
+	puts(ua_ltoa( 9223372036854775807, gbuf));
+	puts(ua_ltoa(-9223372036854775807, gbuf));
+	puts(ua_ltoa( 2147483647, gbuf));
+	puts(ua_ltoa(-2147483648, gbuf));		// -2147483648: min neg
+	puts(ua_ltoa(-1234, gbuf));
+	puts(ua_ltoa( 1234, gbuf));
+	puts(ua_ltoa(-1, gbuf));
+	puts(ua_ltoa( 0, gbuf));
+	puts(ua_ltoa(-0, gbuf));
 }
 
 static void test15()
@@ -477,9 +449,9 @@ static void test15()
 	const char format[] = "%lx";
 
 	const int n1 = sprintf(NULL, format, -1L);
-	const int n2 = sprintf(buf,  format, -1L);
+	const int n2 = sprintf(gbuf,  format, -1L);
 
-	puts(buf);
+	puts(gbuf);
 
 	printf("n1 = %d\n", n1);
 	printf("n2 = %d\n", n2);
@@ -489,12 +461,29 @@ static void test15()
 
 static void test16()
 {
-	char buf[32] = { 0 };
+	char buf[96] = { 0 };
 
 	memset(buf, '_', sizeof(buf) - 1);
 
 	char *s = alloca(16);
 	memset(s, 'A', 16);
+
+	//
+	memset(buf, '_', sizeof(buf) - 1);
+	ua_pgx(buf + 10, -1);
+	puts(buf);
+	puts(buf + strlen(buf) + 1);
+
+	memset(buf, '_', sizeof(buf) - 1);
+	ua_pwx(buf + 10, -1);
+	puts(buf);
+	puts(buf + strlen(buf) + 1);
+
+	memset(buf, '_', sizeof(buf) - 1);
+	ua_pbx(buf + 10, -1);
+	puts(buf);
+	puts(buf + strlen(buf) + 1);
+	
 
 int iii = 0;
 }
@@ -505,8 +494,6 @@ int main(int argc, char** argv, char** envs)
 {
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
-
-	char s[1024];
 
 	ua_test(-1);
 	ua_test(-1L);

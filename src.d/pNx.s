@@ -14,25 +14,25 @@ global ua_pbx
 
 ; long (8byte)
 ua_pgx:
-		mov			rcx, 16
+		mov			rcx, 0x10
 		call		ua_pNx
 		ret
 
 ; int (4byte)
 ua_pwx:
-		mov			rcx, 8
+		mov			rcx, 0x8
 		call		ua_pNx
 		ret
 
 ; short (2byte)
 ua_phx:
-		mov			rcx, 4
+		mov			rcx, 0x4
 		call		ua_pNx
 		ret
 
 ; char (1byte)
 ua_pbx:
-		mov			rcx, 2
+		mov			rcx, 0x2
 		call		ua_pNx
 		ret
 

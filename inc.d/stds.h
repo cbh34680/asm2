@@ -40,7 +40,7 @@ extern int printf(const char *format, ...);
 extern int puts(const char* s);
 extern void *sbrk(intptr_t increment);
 extern int sprintf(char *str, const char *format, ...);
-extern int vsprintf(char *str, const char *format, va_list ap);
+extern int vsprintf(char *str, const char *format, __builtin_va_list ap);
 
 //extern int sprintf(const char *format, ...);
 /*

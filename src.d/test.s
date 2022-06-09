@@ -12,7 +12,7 @@ ua_test:
 		;mov			rbp, rsp
 		;sub			rsp, 0x20
 
-		mov			qword [rbp - 8], 0x0abcdef012345678
+		;mov			qword [rbp - 8], 0x0abcdef012345678
 		mov			rax, qword [rbp - 8]
 
 

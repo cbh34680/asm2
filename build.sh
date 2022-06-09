@@ -8,48 +8,65 @@ cd "$(dirname "$(readlink -f "${BASH_SOURCE:-$0}")")"
 rm -rf obj.d/
 [ -d obj.d/ ] || mkdir obj.d
 
-gccopts=''
-gccopts="${gccopts} -std=c11"
-gccopts="${gccopts} -g -O0"
-#gccopts="${gccopts} -static"
+##
+## cc
+##
 
-gccopts="${gccopts} -ffreestanding"
-gccopts="${gccopts} -fno-builtin"
-gccopts="${gccopts} -fno-asynchronous-unwind-tables"
-gccopts="${gccopts} -fno-pic"
-gccopts="${gccopts} -fno-pie"
+cc='gcc'
+#cc='clang-11'
 
-gccopts="${gccopts} -fno-stack-protector"
-#gccopts="${gccopts} -fstack-protector-strong"
-#gccopts="${gccopts} -fstack-protector-all"
+ccopts=''
 
-gccopts="${gccopts} -m64"
-gccopts="${gccopts} -masm=intel"
-gccopts="${gccopts} -mno-red-zone"
+ccopts="${ccopts} -I ${PWD}/inc.d"
 
-#gccopts="${gccopts} -mpreferred-stack-boundary=3"
-##gccopts="${gccopts} -mincoming-stack-boundary=3"
-##gccopts="${gccopts} -mstackrealign"
+ccopts="${ccopts} -std=c11"
+ccopts="${ccopts} -g -O0"
+#ccopts="${ccopts} -static"
 
-gccopts="${gccopts} -nostdlib"
-gccopts="${gccopts} -nostdinc"
-gccopts="${gccopts} -Wall -Wno-unused-variable -Wno-unused-but-set-variable"
-gccopts="${gccopts} -I ${PWD}/inc.d"
+ccopts="${ccopts} -ffreestanding"
+ccopts="${ccopts} -fno-builtin"
+ccopts="${ccopts} -fno-asynchronous-unwind-tables"
+ccopts="${ccopts} -fno-pic"
+ccopts="${ccopts} -fno-pie"
 
-gcc ${gccopts} -c src.d/abort.c -o obj.d/abort.o
-gcc ${gccopts} -c src.d/brk.c -o obj.d/brk.o
-gcc ${gccopts} -c src.d/init.c -o obj.d/init.o
-gcc ${gccopts} -c src.d/log10.c -o obj.d/log10.o
-gcc ${gccopts} -c src.d/malloc.c -o obj.d/malloc.o
-gcc ${gccopts} -c src.d/print.c -o obj.d/print.o
-gcc ${gccopts} -c src.d/sprint.c -o obj.d/sprint.o
-gcc ${gccopts} -c src.d/str.c -o obj.d/str.o
-#gcc ${gccopts} -c src.d/va.c -o obj.d/va.o
+#ccopts="${ccopts} -fstack-protector"
+ccopts="${ccopts} -fno-stack-protector"
+#ccopts="${ccopts} -fstack-protector-strong"
+#ccopts="${ccopts} -fstack-protector-all"
 
-gcc ${gccopts} -c app.c -o app.o -v
-gcc ${gccopts} -c app.c -E -P -C -o app.pc
+ccopts="${ccopts} -m64"
+ccopts="${ccopts} -masm=intel"
+ccopts="${ccopts} -mno-red-zone"
 
-#gcc ${gccopts} -shared -fPIC libmy.c -o libmy.so
+#ccopts="${ccopts} -mpreferred-stack-boundary=3"
+##ccopts="${ccopts} -mincoming-stack-boundary=3"
+##ccopts="${ccopts} -mstackrealign"
+
+ccopts="${ccopts} -nostdlib"
+ccopts="${ccopts} -nostdinc"
+ccopts="${ccopts} -Wall"
+ccopts="${ccopts} -Wno-unused-variable"
+ccopts="${ccopts} -Wno-unused-but-set-variable"
+
+
+$cc ${ccopts} -c src.d/abort.c -o obj.d/abort.o
+$cc ${ccopts} -c src.d/brk.c -o obj.d/brk.o
+$cc ${ccopts} -c src.d/init.c -o obj.d/init.o
+$cc ${ccopts} -c src.d/log10.c -o obj.d/log10.o
+$cc ${ccopts} -c src.d/malloc.c -o obj.d/malloc.o
+$cc ${ccopts} -c src.d/print.c -o obj.d/print.o
+$cc ${ccopts} -c src.d/sprint.c -o obj.d/sprint.o
+$cc ${ccopts} -c src.d/str.c -o obj.d/str.o
+#$cc ${ccopts} -c src.d/va.c -o obj.d/va.o
+
+$cc ${ccopts} -c app.c -o app.o -v
+$cc ${ccopts} -c app.c -E -P -C -o app.pc
+
+#$cc ${ccopts} -shared -fPIC libmy.c -o libmy.so
+
+##
+## nasm
+##
 
 nasmopts=''
 nasmopts="${nasmopts} -f elf64"
@@ -76,6 +93,10 @@ nasm ${nasmopts} src.d/strlen.s -o obj.d/strlen.o
 nasm ${nasmopts} src.d/test.s -o obj.d/test.o
 
 nasm ${nasmopts} src.d/syscall.s -o obj.d/syscall.o
+
+##
+## ld
+##
 
 #
 ldopts=''
