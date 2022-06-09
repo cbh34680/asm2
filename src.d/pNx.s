@@ -1,9 +1,14 @@
 %include "comm.s"
 
-global ua_pgx
-global ua_pwx
-global ua_phx
-global ua_pbx
+global	ua_pgx
+global	ua_pwx
+global	ua_phx
+global	ua_pbx
+
+global	ua_pgx0
+global	ua_pwx0
+global	ua_phx0
+global	ua_pbx0
 
 ;
 		section		.text
@@ -14,75 +19,77 @@ global ua_pbx
 
 ; long (8byte)
 ua_pgx:
-		mov			rcx, 0x10
+		xor			eax, eax
+		mov			ecx, 16
 		call		ua_pNx
 		ret
 
 ; int (4byte)
 ua_pwx:
-		mov			rcx, 0x8
+		xor			eax, eax
+		mov			ecx, 8
 		call		ua_pNx
 		ret
 
 ; short (2byte)
 ua_phx:
-		mov			rcx, 0x4
+		xor			eax, eax
+		mov			ecx, 4
 		call		ua_pNx
 		ret
 
 ; char (1byte)
 ua_pbx:
-		mov			rcx, 0x2
+		xor			eax, eax
+		mov			ecx, 2
 		call		ua_pNx
 		ret
 
-;
-ua_pNx_:
-		push		rbx
+; ----------------- zero padding
 
-		; rbx = &outbuf[N] (0 origin)
-		lea			rbx, [rdi + rcx]
-
-		; outbuf[N + 1] = '\0'
-		mov			byte [rbx], 0x0
-
-.loop:
-		; rax: input
-		mov			rax, rsi
-
-		; last 8bit
-		and			eax, 0xf
-
-		; load char
-		mov			al, _HEXCHARS[rax]
-
-		; outpos--
-		dec			rbx
-
-		; store
-		mov			byte [rbx], al
-
-		; rax: input = input >> 4
-		shr			rsi, 4
-
-		; repeat rcx times
-		loop		.loop
-
-.end:
-		mov			rax, rdi
-
-		pop			rbx
+; long (8byte)
+ua_pgx0:
+		mov			eax, ON
+		mov			ecx, 16
+		call		ua_pNx
 		ret
 
+; int (4byte)
+ua_pwx0:
+		mov			eax, ON
+		mov			ecx, 8
+		call		ua_pNx
+		ret
+
+; short (2byte)
+ua_phx0:
+		mov			eax, ON
+		mov			ecx, 4
+		call		ua_pNx
+		ret
+
+; char (1byte)
+ua_pbx0:
+		mov			eax, ON
+		mov			ecx, 2
+		call		ua_pNx
+		ret
+
+; ----------------- main
 ;
 ua_pNx:
-		enter		0x20, 0
+		;  -1, -23 ... make string
+		; -24, -27 ... zero-flag
+		enter		32, 0
 
 		; backup
 		push		rbx
 
 		; mark stack-overflow
 		REDZONE_MARK
+
+		; save zero-flag
+		mov			[rbp - 24], eax
 
 		; rbx = &outbuf[N] (0 origin)
 		lea			rbx, [rbp - 1]
@@ -109,7 +116,17 @@ ua_pNx:
 		; rax: input = input >> 4
 		shr			rsi, 4
 
-		; repeat (max)rcx times
+		; check zero-flag
+		mov			eax, [rbp - 24]
+		test		eax, eax
+		jz			.nopad
+
+		; zero-padding
+		loop		.loop
+
+.nopad:
+		; repeat (max)ecx times
+		test		rsi, rsi
 		loopnz		.loop
 
 .copy:

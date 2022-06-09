@@ -27,7 +27,7 @@ static void test1()
 	assert(s1 == d1);
 	assert((s1 - s2) == 16);
 
-	printf("s1=0x%lx d1=0x%lx s2=0x%lx\n");
+	printf("s1=0x%lx d1=0x%lx s2=0x%lx\n", s1, d1, s2);
 
 	puts(memset(gbuf, ',', 15));
 	gbuf[15]= '\0';
@@ -495,6 +495,27 @@ static void test17()
 			//   12345678901234567890
 	puts(ua_ltoa(-9223372036854775800L, gbuf));
 	puts(ua_ultoa(-1L, gbuf));
+
+	printf("%c\n", 'a');
+	printf("%p %p\n", *test17, NULL);
+}
+
+static void test18()
+{
+	int dat[] = { 0, 1, -1 };
+
+	for (int i=0; i<( sizeof(dat)/sizeof(dat[0]) ); i++)
+	{
+		puts(ua_pbx(gbuf, dat[i]));
+		puts(ua_phx(gbuf, dat[i]));
+		puts(ua_pwx(gbuf, dat[i]));
+		puts(ua_pgx(gbuf, dat[i]));
+
+		puts(ua_pbx0(gbuf, dat[i]));
+		puts(ua_phx0(gbuf, dat[i]));
+		puts(ua_pwx0(gbuf, dat[i]));
+		puts(ua_pgx0(gbuf, dat[i]));
+	}
 }
 
 extern void ua_test(long);
@@ -545,6 +566,8 @@ int main(int argc, char** argv, char** envs)
 	test16();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 17");
 	test17();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 18");
+	test18();
 
 	return 2;
 }

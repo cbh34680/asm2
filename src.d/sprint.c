@@ -8,6 +8,7 @@ enum value_type
 	VT_STRING,
 	VT_FLOAT,
 	VT_DOUBLE,
+	VT_ADDRESS,
 };
 
 enum width_type
@@ -36,12 +37,13 @@ struct data_st
 	{
 		double d;
 		float f;
-		char* s;
+		char *s;
 		long l;
 		unsigned long ul;
 		int i;
 		unsigned int ui;
 		char c;
+		void *p;
 	}
 	val;
 
@@ -90,6 +92,13 @@ static void set_data(char type, __builtin_va_list ap, struct data_st *data)
 			data->val.s = __builtin_va_arg(ap, char *);
 			break;
 		}
+
+		case 'p':
+		{
+			data->vt = VT_ADDRESS;
+			data->val.p = __builtin_va_arg(ap, void *);
+			break;
+		}
 	}
 }
 
@@ -136,6 +145,9 @@ static size_t val_strlen(struct data_st const *data)
 
 		case VT_STRING:
 			return strlen(data->val.s);
+
+		case VT_ADDRESS:
+			return 2 + 16;	// "0x" + ffff ffff ffff ffff
 	}
 
 	return 0;
@@ -154,6 +166,21 @@ static void write_data(char *buff, const struct data_st *data)
 			strcpy(buff, data->val.s);
 			break;
 
+		case VT_ADDRESS:
+		{
+			if (data->val.p)
+			{
+				strcpy(buff, "0x");
+				ua_pgx(&buff[2], data->val.p);
+			}
+			else
+			{
+				strcpy(buff, "(nil)");
+			}
+			
+			break;
+		}
+
 		case VT_INT:
 		{
 			switch (data->wt)
@@ -167,7 +194,7 @@ static void write_data(char *buff, const struct data_st *data)
 							switch (data->st)
 							{
 								case ST_SIGNED:		ua_ltoa(data->val.l, buff);		break;
-								case ST_UNSIGNED:	ua_ltoa(data->val.ul, buff);	break;
+								case ST_UNSIGNED:	ua_ultoa(data->val.ul, buff);	break;
 							}
 
 							break;
@@ -190,7 +217,7 @@ static void write_data(char *buff, const struct data_st *data)
 							switch (data->st)
 							{
 								case ST_SIGNED:		ua_itoa(data->val.i, buff);		break;
-								case ST_UNSIGNED:	ua_itoa(data->val.ui, buff);	break;
+								case ST_UNSIGNED:	ua_uitoa(data->val.ui, buff);	break;
 							}
 
 							break;
@@ -254,6 +281,7 @@ int vsprintf(char *str, const char *format, __builtin_va_list ap)
 				case 'c':
 				case 'x':
 				case 's':
+				case 'p':
 				{
 					set_data(*ipos, ap, &data);
 					break;

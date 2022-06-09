@@ -22,6 +22,9 @@ _ua_ltoa:
 		; backup
 		push		rbx
 
+		; mark stack-overflow
+		REDZONE_MARK
+
 		; ch: neg-flag
 		; cl: temp char
 		xor			ecx, ecx
@@ -93,6 +96,9 @@ _ua_ltoa:
 		; do memcpy
 		cld
 		rep movsb
+
+		; check stack-overflow
+		REDZONE_CHECK
 
 		pop			rbx
 		leave

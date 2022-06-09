@@ -17,13 +17,16 @@ cc='gcc'
 
 ccopts=''
 
-ccopts="${ccopts} -I ${PWD}/inc.d"
+ccopts="${ccopts} -I${PWD}/inc.d"
 
-ccopts="${ccopts} -std=c11"
-ccopts="${ccopts} -g -O0"
-#ccopts="${ccopts} -static"
+ccopts="${ccopts} -std=c11 -g"
+ccopts="${ccopts} -O0"
+ccopts="${ccopts} -static"
+
+#ccopts="${ccopts} -fcaller-saves"
 
 ccopts="${ccopts} -ffreestanding"
+ccopts="${ccopts} -nostartfiles"
 ccopts="${ccopts} -fno-builtin"
 ccopts="${ccopts} -fno-asynchronous-unwind-tables"
 ccopts="${ccopts} -fno-pic"

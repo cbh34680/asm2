@@ -68,6 +68,10 @@ extern char *ua_pgx(char *dest, const unsigned long src);
 extern char *ua_pwx(char *dest, const unsigned int src);
 extern char *ua_phx(char *dest, const unsigned short src);
 extern char *ua_pbx(char *dest, const unsigned char src);
+extern char *ua_pgx0(char *dest, const unsigned long src);
+extern char *ua_pwx0(char *dest, const unsigned int src);
+extern char *ua_phx0(char *dest, const unsigned short src);
+extern char *ua_pbx0(char *dest, const unsigned char src);
 
 // [5] user func - c
 extern void uc_easy_abort(const char *assertion,
