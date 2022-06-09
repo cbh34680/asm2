@@ -47,7 +47,8 @@ ua_itoa:
 		; edx = eax % edi
 		;
 		; cdq: segfault if eax=-2147483648
-		cqo
+		;cqo
+		xor			edx, edx
 		div			edi
 
 		; write '0' - '9'

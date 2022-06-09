@@ -16,6 +16,12 @@ enum width_type
 	WT_LONG,
 };
 
+enum sign_type
+{
+	ST_SIGNED		= 0,
+	ST_UNSIGNED,
+};
+
 enum number_format
 {
 	NF_DECIMAL		= 0,
@@ -32,13 +38,16 @@ struct data_st
 		float f;
 		char* s;
 		long l;
+		unsigned long ul;
 		int i;
+		unsigned int ui;
 		char c;
 	}
 	val;
 
 	enum value_type vt;
 	enum width_type wt;
+	enum sign_type st;
 	enum number_format nf;
 };
 
@@ -103,8 +112,8 @@ static size_t val_strlen(struct data_st const *data)
 				{
 					switch (data->nf)
 					{
-						case NF_DECIMAL:	return 20;
-						case NF_HEXA:		return 16;
+						case NF_DECIMAL:	return 20 + 1;	// width(20) + sign('-')
+						case NF_HEXA:		return 16;		// ffff ffff ffff ffff (-1)
 					}
 
 					break;
@@ -114,8 +123,8 @@ static size_t val_strlen(struct data_st const *data)
 				{
 					switch (data->nf)
 					{
-						case NF_DECIMAL:	return 10;
-						case NF_HEXA:		return 8;
+						case NF_DECIMAL:	return 10 + 1;	// width(10) + sign('-')
+						case NF_HEXA:		return 8;		// ffff ffff (-1)
 					}
 
 					break;
@@ -153,8 +162,20 @@ static void write_data(char *buff, const struct data_st *data)
 				{
 					switch (data->nf)
 					{
-						case NF_DECIMAL:	ua_ltoa(data->val.l, buff);	break;
-						case NF_HEXA:		ua_pgx(buff, data->val.l);	break;
+						case NF_DECIMAL:
+						{
+							switch (data->st)
+							{
+								case ST_SIGNED:		ua_ltoa(data->val.l, buff);		break;
+								case ST_UNSIGNED:	ua_ltoa(data->val.ul, buff);	break;
+							}
+
+							break;
+						}
+
+						case NF_HEXA:
+							ua_pgx(buff, data->val.l);
+							break;
 					}
 
 					break;
@@ -164,8 +185,20 @@ static void write_data(char *buff, const struct data_st *data)
 				{
 					switch (data->nf)
 					{
-						case NF_DECIMAL:	ua_itoa(data->val.i, buff);	break;
-						case NF_HEXA:		ua_pwx(buff, data->val.i);	break;
+						case NF_DECIMAL:
+						{
+							switch (data->st)
+							{
+								case ST_SIGNED:		ua_itoa(data->val.i, buff);		break;
+								case ST_UNSIGNED:	ua_itoa(data->val.ui, buff);	break;
+							}
+
+							break;
+						}
+
+						case NF_HEXA:
+							ua_pwx(buff, data->val.i);
+							break;
 					}
 
 					break;
@@ -201,6 +234,12 @@ int vsprintf(char *str, const char *format, __builtin_va_list ap)
 				case 'l':
 				{
 					data.wt = WT_LONG;
+					continue;
+				}
+
+				case 'u':
+				{
+					data.st = ST_UNSIGNED;
 					continue;
 				}
 

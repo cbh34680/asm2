@@ -19,8 +19,8 @@ set verbose on
 
 tui enable
 
-layout src
-#layout asm
+#layout src
+layout asm
 layout regs
 
 #layout split
@@ -44,9 +44,10 @@ end
 
 #b _start
 b main
-#b ua_test
+#b _ua_test
 
 run
-d
+#d
+
 refresh
 

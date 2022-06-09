@@ -42,7 +42,8 @@ ua_ltoa:
 		; rax = rax / rdi
 		; edx = rax % rdi
 		;
-		cqo
+		;cqo
+		xor			edx, edx
 		div			rdi
 
 		; write '0' - '9'
