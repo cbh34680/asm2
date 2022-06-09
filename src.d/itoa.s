@@ -1,13 +1,24 @@
 %include "comm.s"
 
-global ua_itoa
-extern _HEXCHARS
+global	ua_itoa
+global	ua_uitoa
 
 ;
 		section		.text
 
 ua_itoa:
-		enter		0x10, 0
+		xor			edx, edx
+		call		_ua_itoa
+		ret
+
+ua_uitoa:
+		mov			edx, ON
+		call		_ua_itoa
+		ret
+
+
+_ua_itoa:
+		enter		16, 0
 
 		; backup
 		push		rbx
@@ -28,6 +39,10 @@ ua_itoa:
 
 		; for div
 		mov			edi, 10
+
+		; check unsigned-flag
+		test		edx, edx
+		jnz			.loop
 
 		; check eax <0
 		cmp			eax, 0
@@ -52,7 +67,7 @@ ua_itoa:
 		div			edi
 
 		; write '0' - '9'
-		mov			cl, _HEXCHARS[rdx]
+		mov			cl, _HEXCHARS[edx]
 		mov			[rbx], cl
 
 		; check input >0

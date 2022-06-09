@@ -483,9 +483,18 @@ static void test16()
 	ua_pbx(buf + 10, -1);
 	puts(buf);
 	puts(buf + strlen(buf) + 1);
-	
+}
 
-int iii = 0;
+static void test17()
+{
+	puts(ua_itoa(-1, gbuf));
+	puts(ua_itoa(-2147483640, gbuf));
+	puts(ua_uitoa(-1, gbuf));
+
+	puts(ua_ltoa(-1L, gbuf));
+			//   12345678901234567890
+	puts(ua_ltoa(-9223372036854775800L, gbuf));
+	puts(ua_ultoa(-1L, gbuf));
 }
 
 extern void ua_test(long);
@@ -534,6 +543,8 @@ int main(int argc, char** argv, char** envs)
 	test15();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 16");
 	test16();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 17");
+	test17();
 
 	return 2;
 }

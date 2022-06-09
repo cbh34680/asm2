@@ -1,12 +1,23 @@
 %include "comm.s"
 
-global ua_ltoa
+global	ua_ltoa
+global	ua_ultoa
 
 ;
 		section		.text
 
 ua_ltoa:
-		enter		0x20, 0
+		xor			edx, edx
+		call		_ua_ltoa
+		ret
+
+ua_ultoa:
+		mov			edx, ON
+		call		_ua_ltoa
+		ret
+
+_ua_ltoa:
+		enter		32, 0
 
 		; backup
 		push		rbx
@@ -23,7 +34,11 @@ ua_ltoa:
 		mov			byte [rbx], 0x0
 
 		; for div
-		mov			rdi, 10
+		mov			edi, 10
+
+		; check unsigned-flag
+		test		edx, edx
+		jnz			.loop
 
 		; check rax <0
 		cmp			rax, 0
@@ -40,9 +55,7 @@ ua_ltoa:
 		dec			rbx
 
 		; rax = rax / rdi
-		; edx = rax % rdi
-		;
-		;cqo
+		; rdx = rax % rdi
 		xor			edx, edx
 		div			rdi
 
