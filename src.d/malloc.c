@@ -181,7 +181,7 @@ void const *uc_walk_freep(uc_walk_callback cb_free)
 			if (pf != &base)
 			{
 				void const *addr = pf + 1;
-				void const *next = pf->s.ptr + 1;
+				void const *next = pf->s.ptr;
 
 				_Bool endloop = cb_free(addr, (pf->s.size - 1) * sizeof(Header), pf==freep, next);
 				if (endloop)
@@ -225,7 +225,7 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 				if (cb_free)
 				{
 					void const *addr = pb + 1;
-					void const *next = pb->s.ptr + 1;
+					void const *next = pb->s.ptr;
 
 					_Bool endloop = cb_free(addr, (pb->s.size - 1) * sizeof(Header), pb==freep, next);
 					if (endloop)
@@ -242,7 +242,7 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 				if (cb_alloc)
 				{
 					void const *addr = pb + 1;
-					void const *next = pb->s.ptr + 1;
+					void const *next = pb->s.ptr;
 
 					_Bool endloop = cb_alloc(addr, (pb->s.size - 1) * sizeof(Header), 0, next);
 

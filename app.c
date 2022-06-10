@@ -182,6 +182,7 @@ static void test8()
 	void *p2 = NULL;
 	void *p3 = NULL;
 	void *p4 = NULL;
+	void const *wlast = NULL;
 
 	puts("-------------------------------------");
 	puts("@@ alloc @@");
@@ -189,6 +190,8 @@ static void test8()
 	p1 = malloc(16);
 	strcpy(p1, "p1");
 	prt(p1);
+
+	wlast = uc_walk_heap(cb_free, cb_alloc);
 
 	p2 = malloc(16);
 	strcpy(p2, "p2");
@@ -213,7 +216,7 @@ static void test8()
 	freep = uc_get_freep();
 	prt(freep);
 
-	void const* wlast = uc_walk_heap(cb_free, cb_alloc);
+	wlast = uc_walk_heap(cb_free, cb_alloc);
 	prt(wlast);
 
 	puts("-------------------------------------");
