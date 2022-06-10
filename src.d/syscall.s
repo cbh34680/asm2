@@ -44,3 +44,10 @@ syscall_exit:
 	syscall
 	ret
 ;
+global syscall_time
+
+syscall_time:
+	mov		eax, 201
+	syscall
+	ret
+;

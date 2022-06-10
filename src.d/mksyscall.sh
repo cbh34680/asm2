@@ -12,7 +12,7 @@ cat << EOF
 EOF
 
 ausyscall --dump | sed 1d | grep -E \
-'\b(exit|open|close|read|write|brk)\b' \
+'\b(exit|open|close|read|write|brk|time)\b' \
 | while read sno sname
 do
   cat << EOF

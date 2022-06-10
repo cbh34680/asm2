@@ -103,6 +103,10 @@ typedef uint64_t Elf64_Addr;
 typedef uint64_t Elf64_Off;
 typedef uint64_t Elf64_Xword;
 
+// time.h
+typedef long int __time_t;
+typedef __time_t time_t;
+
 typedef struct
 {
   uint64_t a_type;
@@ -172,9 +176,10 @@ va_list[1];
 //
 struct auxv_data_type
 {
-	const Elf64_Ehdr* sysi_ehdr;
-	const Elf64_Phdr* main_phdr;
+	Elf64_Ehdr const *sysi_ehdr;
+	Elf64_Phdr const *main_phdr;
 	size_t pagesz;
+	void const *entry;
 };
 
 #endif

@@ -134,16 +134,11 @@ static void test7()
 	printf("end=%lx\n", &end);
 }
 
-static void prt_(char const *name, void const *pos)
-{
-	printf("[%s]\t\t%p\n", name, pos);
-}
-
-#define prt(v) prt_(#v, (v))
+#define CB_TO_DATA(a)  ( (void *)(a) + 16 )
 
 static _Bool cb_free(const void *addr, size_t size, _Bool isfreep, const void *next)
 {
-	const char *s = (char *)addr;
+	const char *s = (char *)CB_TO_DATA(addr);
 
 	printf("\tfree:\taddr=%p, size=%lu, isfreep=%d, next=%p, data=[%c%c]\n",
 		addr, size, isfreep, next, s[0], s[1]);
@@ -155,7 +150,7 @@ static _Bool cb_free(const void *addr, size_t size, _Bool isfreep, const void *n
 
 static _Bool cb_alloc(const void *addr, size_t size, _Bool isfreep, const void *next)
 {
-	const char *s = (char *)addr;
+	const char *s = (char *)CB_TO_DATA(addr);
 
 	printf("\talloc:\taddr=%p, size=%lu, isfreep=%d, next=%p, data=[%c%c]\n",
 		addr, size, isfreep, next, s[0], s[1]);
@@ -163,8 +158,12 @@ static _Bool cb_alloc(const void *addr, size_t size, _Bool isfreep, const void *
 	return 0;
 }
 
-void const *uc_get_base();
-void const *uc_get_freep();
+static void prt_(char const *name, void const *pos)
+{
+	printf("[%s]\t\t%p\n", name, pos);
+}
+
+#define prt(v) prt_(#v, (v))
 
 static void test8()
 {
@@ -172,8 +171,13 @@ static void test8()
 	void *left = sbrk(0);
 	prt(left);
 
-	void const *base = uc_get_base();
+	void const * const base = uc_get_base(0);
+	void const *bnext = NULL;
+
 	prt(base);
+
+	bnext = uc_get_base(1);
+	prt(bnext);
 
 	void const *freep = uc_get_freep();
 
@@ -182,6 +186,8 @@ static void test8()
 	void *p2 = NULL;
 	void *p3 = NULL;
 	void *p4 = NULL;
+	void *p5 = NULL;
+	void *p6 = NULL;
 	void const *wlast = NULL;
 
 	puts("-------------------------------------");
@@ -190,8 +196,6 @@ static void test8()
 	p1 = malloc(16);
 	strcpy(p1, "p1");
 	prt(p1);
-
-	wlast = uc_walk_heap(cb_free, cb_alloc);
 
 	p2 = malloc(16);
 	strcpy(p2, "p2");
@@ -204,17 +208,30 @@ static void test8()
 	p4 = strdup("p4");
 	prt(p4);
 
+	p5 = strdup("p5");
+	prt(p5);
+
+	p6 = strdup("p6");
+	prt(p6);
+
 	puts("-------------------------------------");
-	puts("@@ free @@");
+	puts("@@ some free @@");
+
 	free(p2);
 	prt(p2);
 	p2 = NULL;
+
+	free(p5);
+	prt(p5);
+	p5 = NULL;
 
 	puts("-------------------------------------");
 	puts("@@ heap walk @@");
 
 	freep = uc_get_freep();
 	prt(freep);
+	bnext = uc_get_base(1);
+	prt(bnext);
 
 	wlast = uc_walk_heap(cb_free, cb_alloc);
 	prt(wlast);
@@ -224,12 +241,13 @@ static void test8()
 
 	freep = uc_get_freep();
 	prt(freep);
+	bnext = uc_get_base(1);
+	prt(bnext);
 
-	wlast = uc_walk_freep(cb_free);
-	prt(wlast);
+	uc_walk_freep(cb_free);
 
 	puts("-------------------------------------");
-	puts("@@ free @@");
+	puts("@@ cleanup @@");
 
 	free(p1);
 	prt(p1);
@@ -239,11 +257,20 @@ static void test8()
 	prt(p3);
 	free(p4);
 	prt(p4);
+	free(p5);
+	prt(p5);
+	free(p6);
+	prt(p6);
 
 	puts("-------------------------------------");
-	puts("@@ walk @@");
+	puts("@@ heap walk @@");
 
 	uc_walk_heap(cb_free, cb_alloc);
+
+	puts("-------------------------------------");
+	puts("@@ freep walk @@");
+
+	uc_walk_freep(cb_free);
 
 //
 	puts("-------------------------------------");
@@ -555,6 +582,14 @@ static void test18()
 	}
 }
 
+static void test19()
+{
+	time_t t;
+	time(&t);
+
+	printf("%ld\n", t);
+}
+
 extern void ua_test(long);
 
 int main(int argc, char** argv, char** envs)
@@ -562,7 +597,7 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
-#if 1
+#if 0
 	test8();
 
 #else
@@ -609,6 +644,8 @@ int main(int argc, char** argv, char** envs)
 	test17();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 18");
 	test18();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 19");
+	test19();
 #endif
 
 	return 2;

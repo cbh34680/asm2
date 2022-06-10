@@ -26,6 +26,7 @@ static void parse_auxv(const Elf64_auxv_t* auxv)
 	const Elf64_Ehdr* sysi_ehdr = NULL;
 	const Elf64_Phdr* main_phdr = NULL;
 	size_t pagesz = -1;
+	void *entry = NULL;
 
 	for (; auxv->a_type != AT_NULL; auxv++)
 	{
@@ -42,6 +43,9 @@ static void parse_auxv(const Elf64_auxv_t* auxv)
 			case AT_PAGESZ:
 				pagesz = (size_t)auxv->a_un.a_val;
 				break;
+
+			case AT_ENTRY:
+				entry = (void *)auxv->a_un.a_val;
 		}
 	}
 
@@ -77,6 +81,7 @@ static void parse_auxv(const Elf64_auxv_t* auxv)
 	auxv_data.sysi_ehdr = sysi_ehdr;
 	auxv_data.main_phdr = main_phdr;
 	auxv_data.pagesz = pagesz;
+	auxv_data.entry = entry;
 }
 
 static void parse_phdrs(const Elf64_Phdr* phdr)

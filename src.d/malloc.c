@@ -57,8 +57,10 @@ void *malloc(size_t nbytes)
 				p->s.size = nunits;
 			}
 
-			// freep はリンクの一つ前に設定
+			// アロケートブロック検出用に追加
+			p->s.ptr = NULL;
 
+			// freep はリンクの一つ前に設定
 			freep = prevp;
 
 			return (void*)(p + 1);
@@ -107,20 +109,19 @@ static Header *morecore(size_t nu)
 
 void free(void *ap)
 {
+	// nop if free(NULL)
 	if (! ap)
-	{
 		return;
-	}
 
 	Header *bp,*p;
 	bp = (Header *)ap - 1;
 
+	// freep リストから引数に一致するブロックを探す
+
 	for (p=freep; !(bp > p && bp < p->s.ptr); p=p->s.ptr)
 	{
 		if(p >= p->s.ptr && (bp>p || bp<p->s.ptr))
-		{
 			break;
-		}
 	}
 
 	if (bp+bp->s.size == p->s.ptr)
@@ -156,42 +157,54 @@ void free(void *ap)
 	freep = p;
 }
 
-void const *uc_get_base()
+void *realloc(void *ptr, size_t size)
 {
-	return &base;
 }
 
-void const *uc_get_freep()
+void const *uc_get_base(int target)
+{
+	if (target == 0)
+		return &base;
+
+	return base.s.ptr;
+}
+
+void const *uc_get_freep(void)
 {
 	return freep;
 }
 
 void const *uc_walk_freep(uc_walk_callback cb_free)
 {
+	// check allocated
 	if (! freep)
-	{
-		// no allocated once
 		return NULL;
-	}
 
-	if (freep->s.ptr != &base)
+	// empty freep
+	if (freep->s.ptr == &base)
+		return NULL;
+
+	// freep --> base --> f1 --> f2
+	//            ^              |
+	//            |              |
+	//            b4 <--- f3 <---+
+
+	for (Header const *pf=freep; ; pf=pf->s.ptr)
 	{
-		for (Header const *pf=freep; ; pf=pf->s.ptr)
+		//if (pf != &base)
+		if (pf->s.size)
 		{
-			if (pf != &base)
-			{
-				void const *addr = pf + 1;
-				void const *next = pf->s.ptr;
+			void const *addr = pf;
+			void const *next = pf->s.ptr;
 
-				_Bool endloop = cb_free(addr, (pf->s.size - 1) * sizeof(Header), pf==freep, next);
-				if (endloop)
-					return addr;
-			}
+			_Bool endloop = cb_free(addr, (pf->s.size - 1) * sizeof(Header), pf==freep, next);
+			if (endloop)
+				return addr;
+		}
 
-			if (pf->s.ptr == freep)
-			{
-				break;
-			}
+		if (pf->s.ptr == freep)
+		{
+			break;
 		}
 	}
 
@@ -215,6 +228,42 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 	// ヒープ領域全体を走査
 	for (Header const *pb=(Header *)phs; (void*)pb<phe; pb+=pb->s.size)
 	{
+#if 1
+		// check base
+		if (! pb->s.size)
+			continue;
+
+		if (pb->s.ptr)
+		{
+			// 次のブロックへのリンクがある --> 空き領域
+
+			if (cb_free)
+			{
+				void const *addr = pb;
+				void const *next = pb->s.ptr;
+
+				_Bool endloop = cb_free(addr, (pb->s.size - 1) * sizeof(Header), pb==freep, next);
+				if (endloop)
+					return addr;
+			}
+		}
+		else
+		{
+			// 利用中の領域
+
+			if (cb_alloc)
+			{
+				void const *addr = pb;
+				void const *next = pb->s.ptr;
+
+				_Bool endloop = cb_alloc(addr, (pb->s.size - 1) * sizeof(Header), 0, next);
+
+				if (endloop)
+					return addr;
+			}
+		}
+
+#else
 		// freep を走査
 		for (Header const *pf=freep; ; pf=pf->s.ptr)
 		{
@@ -224,7 +273,7 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 
 				if (cb_free)
 				{
-					void const *addr = pb + 1;
+					void const *addr = pb;
 					void const *next = pb->s.ptr;
 
 					_Bool endloop = cb_free(addr, (pb->s.size - 1) * sizeof(Header), pb==freep, next);
@@ -241,7 +290,7 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 
 				if (cb_alloc)
 				{
-					void const *addr = pb + 1;
+					void const *addr = pb;
 					void const *next = pb->s.ptr;
 
 					_Bool endloop = cb_alloc(addr, (pb->s.size - 1) * sizeof(Header), 0, next);
@@ -258,6 +307,7 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 
 NEXT_LOOP:
 		;
+#endif
 	}
 
 	return NULL;

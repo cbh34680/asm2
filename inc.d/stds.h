@@ -9,11 +9,13 @@ extern void syscall_exit(int);
 extern int syscall_open(const char *pathname, int flags, mode_t mode);
 extern ssize_t syscall_write(int fd, const void *buf, size_t count);
 extern void* syscall_brk(void *addr);
+extern time_t syscall_time(time_t *tloc);
 
 #define close		syscall_close
 #define exit		syscall_exit
 #define open		syscall_open
 #define write		syscall_write
+#define time		syscall_time
 
 // [2] std library - asm
 extern void *alloca(size_t size);
@@ -32,12 +34,13 @@ extern int brk(void *addr);
 extern void free(void *ptr);
 extern double log10(double x);
 extern void *malloc(size_t size);
+extern int printf(const char *format, ...);
+extern int puts(const char* s);
+extern void *realloc(void *ptr, size_t size);
 extern char *strcat(char *dest, const char *src);
 extern char *strcpy(char *dest, const char *src);
 extern char *strdup(const char *s);
 extern int strcmp(const char *s1, const char *s2);
-extern int printf(const char *format, ...);
-extern int puts(const char* s);
 extern void *sbrk(intptr_t increment);
 extern int sprintf(char *str, const char *format, ...);
 extern int vsprintf(char *str, const char *format, __builtin_va_list ap);
@@ -74,6 +77,8 @@ extern char *ua_phx0(char *dest, const unsigned short src);
 extern char *ua_pbx0(char *dest, const unsigned char src);
 
 typedef _Bool (* uc_walk_callback)(const void *addr, size_t size, _Bool isfreep, const void *next);
+extern void const *uc_get_base(int target);
+extern void const *uc_get_freep(void);
 extern void const *uc_walk_freep(uc_walk_callback cb_free);
 extern void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc);
 
