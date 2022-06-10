@@ -100,10 +100,13 @@ extern char edata, etext, end, __bss_start;
 
 #define PAGE_ALIGNED(v) ( ((size_t)(v) + (auxv_data.pagesz - 1)) & ~(auxv_data.pagesz - 1) )
 
+#define BUS_SIZE		(16)
+#define BUS_ALIGNED(v)  ( ((size_t)(v) + (BUS_SIZE - 1)) & ~(BUS_SIZE - 1) )
+
 #define MAX(a, b) ( ((a) > (b)) ? (a) : (b) )
 
 //
-
+#define abs(a) ((a) < 0 ? - (a) : (a))
 
 
 

@@ -159,6 +159,7 @@ void free(void *ap)
 
 void *realloc(void *ptr, size_t size)
 {
+	return NULL;
 }
 
 void const *uc_get_base(int target)

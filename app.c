@@ -288,7 +288,9 @@ static void test9()
 	void *curr = NULL;
 	void *prev = NULL;
 
-	for (int i=0; i<20; i++, prev=curr)
+	void *arr[10];
+
+	for (int i=0; i<(sizeof(arr) / sizeof(arr[0])); i++, prev=curr)
 	{
 		curr = sbrk(0);
 
@@ -302,9 +304,23 @@ static void test9()
 		}
 
 		void *p = malloc(4000);
-
 		printf(" after=%lx\n", p);
+
+		arr[i] = p;
 	}
+
+	uc_walk_heap(cb_free, cb_alloc);
+
+	puts("*");
+
+	for (int i=0; i<(sizeof(arr) / sizeof(arr[0])); i++)
+	{
+		free(arr[i]);
+	}
+
+	uc_walk_heap(cb_free, cb_alloc);
+
+	puts("*");
 }
 
 static void test10(long a, long b, long c)
@@ -584,10 +600,78 @@ static void test18()
 
 static void test19()
 {
+	unsigned long entry = (unsigned long)auxv_data.entry;
+	unsigned long range = (void *)&etext - auxv_data.entry;
+	unsigned long center = BUS_ALIGNED(range / 2 + entry);
+	unsigned int seed = *(unsigned int *)center;
+
+	printf("%p - %p = %lu, center=0x%lx, seed=%u\n", &etext, auxv_data.entry, range, center, seed);
+
+	for (int i=0; i<100; i++)
+	{
+		printf("%d) %d %d\n", i, rand(), rand() % 100);
+	}
+
 	time_t t;
 	time(&t);
 
-	printf("%ld\n", t);
+	srand(t);
+
+	for (int i=0; i<100; i++)
+	{
+		printf("%d) %d %d\n", i, rand(), rand() % 100);
+	}
+	
+}
+
+static void test20()
+{
+	time_t t;
+	time(&t);
+
+	srand(t);
+
+	void *arr[50] = { 0 };
+	int narr = sizeof(arr) / sizeof(arr[0]);
+
+	printf("now=%ld, narr=%d\n", t, narr);
+
+	for (int i=0; i<narr; i++)
+	{
+		int pos = rand() % narr;
+
+		if (arr[pos])
+		{
+			free(arr[pos]);
+			arr[pos] = NULL;
+		}
+		else
+		{
+			size_t size = (rand() % 10240) + 3;
+
+			char *p = malloc(size);
+			sprintf(p, "%d", i);
+
+			arr[pos] = p;
+		}
+	}
+
+	uc_walk_heap(cb_free, cb_alloc);
+
+	puts("*");
+
+	for (int i=0; i<narr; i++)
+	{
+		if (arr[i])
+		{
+			free(arr[i]);
+			arr[i] = NULL;
+		}
+	}
+
+	uc_walk_heap(cb_free, cb_alloc);
+
+	puts("*");
 }
 
 extern void ua_test(long);
@@ -597,8 +681,8 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
-#if 0
-	test8();
+#if 1
+	test20();
 
 #else
 	ua_test(-1);
@@ -646,6 +730,8 @@ int main(int argc, char** argv, char** envs)
 	test18();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 19");
 	test19();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 20");
+	test20();
 #endif
 
 	return 2;

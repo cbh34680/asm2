@@ -58,6 +58,7 @@ $cc ${ccopts} -c src.d/init.c -o obj.d/init.o
 $cc ${ccopts} -c src.d/log10.c -o obj.d/log10.o
 $cc ${ccopts} -c src.d/malloc.c -o obj.d/malloc.o
 $cc ${ccopts} -c src.d/print.c -o obj.d/print.o
+$cc ${ccopts} -c src.d/rand.c -o obj.d/rand.o
 $cc ${ccopts} -c src.d/sprint.c -o obj.d/sprint.o
 $cc ${ccopts} -c src.d/str.c -o obj.d/str.o
 #$cc ${ccopts} -c src.d/va.c -o obj.d/va.o
@@ -133,6 +134,7 @@ obj.d/memmove.o \
 obj.d/memset.o \
 obj.d/pNx.o \
 obj.d/print.o \
+obj.d/rand.o \
 obj.d/sprint.o \
 obj.d/stack.o \
 obj.d/strchr.o \
