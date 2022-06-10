@@ -134,27 +134,34 @@ static void test7()
 	printf("end=%lx\n", &end);
 }
 
-static void prt_(const char *name, const void *pos)
+static void prt_(char const *name, void const *pos)
 {
-	printf("[%s]\t\t%lx\n", name, pos);
+	printf("[%s]\t\t%p\n", name, pos);
 }
 
 #define prt(v) prt_(#v, (v))
 
-static void cb_freep(const void *mem, size_t siz)
+static _Bool cb_free(const void *addr, size_t size, _Bool isfreep, const void *next)
 {
-	printf("\tfreep: %lx, %lx\n", mem, siz);
+	const char *s = (char *)addr;
+
+	printf("\tfree:\taddr=%p, size=%lu, isfreep=%d, next=%p, data=[%c%c]\n",
+		addr, size, isfreep, next, s[0], s[1]);
+
+	//if (s[1] == '2') return 1;
+
+	return 0;
 }
 
-static void cb_alloc(const void *mem, size_t siz)
+static _Bool cb_alloc(const void *addr, size_t size, _Bool isfreep, const void *next)
 {
-	printf("\talloc: %lx, %lx\n", mem, siz);
-}
+	const char *s = (char *)addr;
 
-void uc_walk_freep(
-	void(* cb_freep)(const void *, size_t),
-	void(* cb_alloc)(const void *, size_t)
-);
+	printf("\talloc:\taddr=%p, size=%lu, isfreep=%d, next=%p, data=[%c%c]\n",
+		addr, size, isfreep, next, s[0], s[1]);
+
+	return 0;
+}
 
 void const *uc_get_base();
 void const *uc_get_freep();
@@ -180,35 +187,60 @@ static void test8()
 	puts("@@ alloc @@");
 
 	p1 = malloc(16);
+	strcpy(p1, "p1");
 	prt(p1);
+
 	p2 = malloc(16);
+	strcpy(p2, "p2");
 	prt(p2);
+
 	p3 = malloc(16);
+	strcpy(p3, "p3");
 	prt(p3);
-	p4 = strdup("abcde");
+
+	p4 = strdup("p4");
 	prt(p4);
 
 	puts("-------------------------------------");
-	puts("@@ walk @@");
+	puts("@@ free @@");
+	free(p2);
+	prt(p2);
+	p2 = NULL;
 
-	uc_walk_freep(cb_freep, cb_alloc);
+	puts("-------------------------------------");
+	puts("@@ heap walk @@");
+
+	freep = uc_get_freep();
+	prt(freep);
+
+	void const* wlast = uc_walk_heap(cb_free, cb_alloc);
+	prt(wlast);
+
+	puts("-------------------------------------");
+	puts("@@ freep walk @@");
+
+	freep = uc_get_freep();
+	prt(freep);
+
+	wlast = uc_walk_freep(cb_free);
+	prt(wlast);
 
 	puts("-------------------------------------");
 	puts("@@ free @@");
 
-	free(p2);
-	prt(p2);
-	free(p4);
-	prt(p4);
 	free(p1);
 	prt(p1);
+	free(p2);
+	prt(p2);
 	free(p3);
 	prt(p3);
+	free(p4);
+	prt(p4);
 
 	puts("-------------------------------------");
 	puts("@@ walk @@");
 
-	uc_walk_freep(cb_freep, cb_alloc);
+	uc_walk_heap(cb_free, cb_alloc);
 
 //
 	puts("-------------------------------------");
@@ -487,6 +519,8 @@ static void test16()
 
 static void test17()
 {
+	printf("%u %lu\n", -1, -1UL);
+
 	puts(ua_itoa(-1, gbuf));
 	puts(ua_itoa(-2147483640, gbuf));
 	puts(ua_uitoa(-1, gbuf));
@@ -525,6 +559,10 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
+#if 1
+	test8();
+
+#else
 	ua_test(-1);
 	ua_test(-1L);
 
@@ -568,6 +606,7 @@ int main(int argc, char** argv, char** envs)
 	test17();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 18");
 	test18();
+#endif
 
 	return 2;
 }

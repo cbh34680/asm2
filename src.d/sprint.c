@@ -57,23 +57,53 @@ static void set_data(char type, __builtin_va_list ap, struct data_st *data)
 {
 	switch (type)
 	{
+		case 'u':
 		case 'x':
 		{
-			data->nf = NF_HEXA;
+			switch (type)
+			{
+				case 'u': data->st = ST_UNSIGNED;	break;
+				case 'x': data->nf = NF_HEXA;		break;
+			}
 
 			// fall through
 		}
+
 		case 'd':
 		{
 			data->vt = VT_INT;
 
-			if (data->wt == WT_LONG)
+			switch (data->st)
 			{
-				data->val.l = __builtin_va_arg(ap, long);
-			}
-			else
-			{
-				data->val.i = __builtin_va_arg(ap, int);
+				case ST_SIGNED:
+				{
+					switch (data->wt)
+					{
+						case WT_LONG:
+							data->val.l = __builtin_va_arg(ap, long);
+							break;
+						case WT_NONE:
+							data->val.i = __builtin_va_arg(ap, int);
+							break;
+					}
+
+					break;
+				}
+
+				case ST_UNSIGNED:
+				{
+					switch (data->wt)
+					{
+						case WT_LONG:
+							data->val.ul = __builtin_va_arg(ap, unsigned long);
+							break;
+						case WT_NONE:
+							data->val.ui = __builtin_va_arg(ap, unsigned int);
+							break;
+					}
+
+					break;
+				}
 			}
 
 			break;
@@ -171,7 +201,7 @@ static void write_data(char *buff, const struct data_st *data)
 			if (data->val.p)
 			{
 				strcpy(buff, "0x");
-				ua_pgx(&buff[2], data->val.p);
+				ua_pgx(&buff[2], (unsigned long)data->val.p);
 			}
 			else
 			{
@@ -264,12 +294,6 @@ int vsprintf(char *str, const char *format, __builtin_va_list ap)
 					continue;
 				}
 
-				case 'u':
-				{
-					data.st = ST_UNSIGNED;
-					continue;
-				}
-
 				case '%':
 				{
 					data.vt = VT_CHAR;
@@ -278,6 +302,7 @@ int vsprintf(char *str, const char *format, __builtin_va_list ap)
 				}
 
 				case 'd':
+				case 'u':
 				case 'c':
 				case 'x':
 				case 's':

@@ -79,7 +79,7 @@ void *malloc(size_t nbytes)
 }
 
 //#define NALLOC 1024
-#define NALLOC 4
+#define NALLOC 6
 
 static Header *morecore(size_t nu)
 {
@@ -107,6 +107,11 @@ static Header *morecore(size_t nu)
 
 void free(void *ap)
 {
+	if (! ap)
+	{
+		return;
+	}
+
 	Header *bp,*p;
 	bp = (Header *)ap - 1;
 
@@ -161,26 +166,26 @@ void const *uc_get_freep()
 	return freep;
 }
 
-void uc_walk_freep(
-	void(* cb_freep)(const void *, size_t),
-	void(* cb_alloc)(const void *, size_t)
-)
+void const *uc_walk_freep(uc_walk_callback cb_free)
 {
 	if (! freep)
 	{
-		return;
+		// no allocated once
+		return NULL;
 	}
 
-/*
- * freep のみをたどる場合
- *
 	if (freep->s.ptr != &base)
 	{
-		for (Header *pf=freep; ; pf=pf->s.ptr)
+		for (Header const *pf=freep; ; pf=pf->s.ptr)
 		{
 			if (pf != &base)
 			{
-				cb_freep(pf+1, pf->s.size - 1);
+				void const *addr = pf + 1;
+				void const *next = pf->s.ptr + 1;
+
+				_Bool endloop = cb_free(addr, (pf->s.size - 1) * sizeof(Header), pf==freep, next);
+				if (endloop)
+					return addr;
 			}
 
 			if (pf->s.ptr == freep)
@@ -189,28 +194,42 @@ void uc_walk_freep(
 			}
 		}
 	}
-*/
+
+	return NULL;
+}
+
+void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
+{
+	if (! freep)
+	{
+		// no allocated once
+		return NULL;
+	}
+
 	// .data の最後をページ単位にアライメント
 	void const * const phs = (void *)PAGE_ALIGNED(&end);
 
 	// 現在の brk
 	void const * const phe = sbrk(0);
 
+	// ヒープ領域全体を走査
 	for (Header const *pb=(Header *)phs; (void*)pb<phe; pb+=pb->s.size)
 	{
-		// ヒープ領域全体を走査
-
+		// freep を走査
 		for (Header const *pf=freep; ; pf=pf->s.ptr)
 		{
-			// freep をたどる
-
 			if (pb == pf)
 			{
 				// freep リスト中に登録がある --> 空き領域
 
-				if (cb_freep)
+				if (cb_free)
 				{
-					cb_freep(pb+1, (pb->s.size - 1) * sizeof(Header));
+					void const *addr = pb + 1;
+					void const *next = pb->s.ptr + 1;
+
+					_Bool endloop = cb_free(addr, (pb->s.size - 1) * sizeof(Header), pb==freep, next);
+					if (endloop)
+						return addr;
 				}
 
 				goto NEXT_LOOP;
@@ -222,7 +241,13 @@ void uc_walk_freep(
 
 				if (cb_alloc)
 				{
-					cb_alloc(pb+1, (pb->s.size - 1) * sizeof(Header));
+					void const *addr = pb + 1;
+					void const *next = pb->s.ptr + 1;
+
+					_Bool endloop = cb_alloc(addr, (pb->s.size - 1) * sizeof(Header), 0, next);
+
+					if (endloop)
+						return addr;
 				}
 
 				goto NEXT_LOOP;
@@ -234,6 +259,8 @@ void uc_walk_freep(
 NEXT_LOOP:
 		;
 	}
+
+	return NULL;
 }
 
 // EOF
