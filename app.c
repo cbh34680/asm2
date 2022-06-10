@@ -674,6 +674,11 @@ static void test20()
 	puts("*");
 }
 
+static void test21()
+{
+
+}
+
 extern void ua_test(long);
 
 int main(int argc, char** argv, char** envs)
@@ -681,7 +686,7 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
-#if 1
+#if 0
 	test20();
 
 #else
@@ -732,6 +737,8 @@ int main(int argc, char** argv, char** envs)
 	test19();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 20");
 	test20();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 21");
+	test21();
 #endif
 
 	return 2;

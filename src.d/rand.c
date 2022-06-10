@@ -19,9 +19,7 @@ void srand(unsigned int seed)
 		unsigned long limit = BUS_ALIGNED(&etext) - BUS_SIZE;
 
 		_rdata.start = (void *)BUS_ALIGNED(auxv_data.entry);
-
 		_rdata.size  = ((BUS_ALIGNED(&etext) - (unsigned long)_rdata.start) / BUS_SIZE);
-		//_rdata.size  = 3;
 
 		rdata = &_rdata;
 	}
@@ -34,8 +32,6 @@ int rand(void)
 {
 	if (! rdata)
 		srand(0U);
-
-	assert(rdata);
 
 	if (rdata->curr >= rdata->size)
 	{

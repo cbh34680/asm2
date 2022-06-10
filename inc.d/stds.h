@@ -105,10 +105,6 @@ extern char edata, etext, end, __bss_start;
 
 #define MAX(a, b) ( ((a) > (b)) ? (a) : (b) )
 
-//
-#define abs(a) ((a) < 0 ? - (a) : (a))
-
-
 
 #endif
 

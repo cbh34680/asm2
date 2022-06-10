@@ -159,6 +159,43 @@ void free(void *ap)
 
 void *realloc(void *ptr, size_t size)
 {
+	if (ptr)
+	{
+		if (size == 0)
+		{
+			// size が 0 で ptr が NULL でない場合には、 free(ptr) と等価である
+
+			free(ptr);
+			return NULL;
+		}
+	}
+	else
+	{
+		//  ptr が NULL の場合には malloc(size) と等価である
+
+		return malloc(size);
+	}
+
+	Header *bp = (Header *)ptr - 1;
+
+	if (size == bp->s.size)
+	{
+		return ptr;
+	}
+	else if (size < bp->s.size)
+	{
+		// 領域の先頭から、新旧のサイズの小さい方の位置までの範囲の内容は 変更されない。
+
+		// !! malloc と同様の分割を実装
+		return ptr;
+	}
+
+	// np: 一つ先のブロック
+	Header *np = bp + bp->s.size;
+
+	
+
+
 	return NULL;
 }
 
@@ -198,7 +235,7 @@ void const *uc_walk_freep(uc_walk_callback cb_free)
 			void const *addr = pf;
 			void const *next = pf->s.ptr;
 
-			_Bool endloop = cb_free(addr, (pf->s.size - 1) * sizeof(Header), pf==freep, next);
+			_Bool endloop = cb_free(addr, pf->s.size * sizeof(Header), pf==freep, next);
 			if (endloop)
 				return addr;
 		}
@@ -243,7 +280,7 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 				void const *addr = pb;
 				void const *next = pb->s.ptr;
 
-				_Bool endloop = cb_free(addr, (pb->s.size - 1) * sizeof(Header), pb==freep, next);
+				_Bool endloop = cb_free(addr, pb->s.size * sizeof(Header), pb==freep, next);
 				if (endloop)
 					return addr;
 			}
@@ -257,7 +294,7 @@ void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc)
 				void const *addr = pb;
 				void const *next = pb->s.ptr;
 
-				_Bool endloop = cb_alloc(addr, (pb->s.size - 1) * sizeof(Header), 0, next);
+				_Bool endloop = cb_alloc(addr, pb->s.size * sizeof(Header), 0, next);
 
 				if (endloop)
 					return addr;
