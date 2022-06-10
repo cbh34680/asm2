@@ -53,6 +53,7 @@ void *malloc(size_t nbytes)
 				// ブロックの後方を削る
 
 				p->s.size -= nunits;
+
 				p += p->s.size;
 				p->s.size = nunits;
 			}
@@ -85,21 +86,19 @@ void *malloc(size_t nbytes)
 
 static Header *morecore(size_t nu)
 {
-	char *cp;
-	Header *up;
-
 	if(nu < NALLOC)
 	{
 		nu = NALLOC;
 	}
 
-	cp = sbrk(nu * sizeof(Header));
+	char * const cp = sbrk(nu * sizeof(Header));
 	if(cp == (char *)-1)
 	{
 		return NULL;
 	}
 
-	up = (Header *)cp;
+	Header * const up = (Header *)cp;
+
 	up->s.size = nu;
 
 	free((void *)(up + 1));
@@ -113,48 +112,44 @@ void free(void *ap)
 	if (! ap)
 		return;
 
-	Header *bp,*p;
-	bp = (Header *)ap - 1;
+	Header * const pa = (Header *)ap - 1;
+	Header *pf = freep;
 
-	// freep リストから引数に一致するブロックを探す
-
-	for (p=freep; !(bp > p && bp < p->s.ptr); p=p->s.ptr)
+	for (; ; pf=pf->s.ptr)
 	{
-		if(p >= p->s.ptr && (bp>p || bp<p->s.ptr))
+		// free --> [pa] <-- free			... free ブロックに挟まれた領域かチェック
+		// [pf]              [pf->s.ptr]
+
+		if (pf < pa && pa < pf->s.ptr)
+			break;
+
+		//
+
+		if(pf->s.ptr <= pf && (pf < pa || pa < pf->s.ptr))
 			break;
 	}
 
-	if (bp+bp->s.size == p->s.ptr)
+	if ((pa + pa->s.size) == pf->s.ptr)
 	{
-		// 後のブロックと結合
-
-		bp->s.size += p->s.ptr->s.size;
-		bp->s.ptr = p->s.ptr->s.ptr;
+		pa->s.size += pf->s.ptr->s.size;
+		pa->s.ptr   = pf->s.ptr->s.ptr;
 	}
 	else
 	{
-		// 後ろのリンクと接続
-
-		bp->s.ptr = p->s.ptr;
+		pa->s.ptr = pf->s.ptr;
 	}
 
-	if (p+p->s.size == bp)
+	if ((pf + pf->s.size) == pa)
 	{
-		// 前のブロックと結合
-
-		p->s.size += bp->s.size;
-		p->s.ptr = bp->s.ptr;
+		pf->s.size += pa->s.size;
+		pf->s.ptr   = pa->s.ptr;
 	}
 	else
 	{
-		// 前のリンクと接続
-
-		p->s.ptr = bp;
+		pf->s.ptr = pa;
 	}
 
-	// freep はリンクの一つ前に設定
-
-	freep = p;
+	freep = pf;
 }
 
 void *realloc(void *ptr, size_t size)

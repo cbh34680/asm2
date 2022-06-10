@@ -2,7 +2,7 @@
 
 struct rdata_type
 {
-	void const *start;
+	void *start;
 
 	unsigned int size;
 	unsigned int curr;
