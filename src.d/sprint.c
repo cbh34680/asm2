@@ -359,6 +359,7 @@ int vsprintf(char *str, const char *format, __builtin_va_list ap)
 	return vallen;
 }
 
+
 int sprintf(char *str, const char *format, ...)
 {
 	__builtin_va_list ap;
@@ -390,5 +391,24 @@ int printf(const char *format, ...)
 	uc_prints(str);
 
 	return r;
+}
+
+char* uc_aprintf(const char *format, ...)
+{
+	__builtin_va_list ap, ap2;
+
+	__builtin_va_start(ap, format);
+	__builtin_va_copy(ap2, ap);
+
+	const int len = vsprintf(NULL, format, ap);
+	__builtin_va_end(ap);
+
+	char *str = malloc(len + 1);
+	if (str)
+		vsprintf(str, format, ap2);
+
+	__builtin_va_end(ap2);
+
+	return str;
 }
 

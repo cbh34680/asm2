@@ -601,12 +601,6 @@ static void test18()
 
 static void test19()
 {
-	unsigned long entry = (unsigned long)auxv_data.entry;
-	unsigned long range = (void *)&etext - auxv_data.entry;
-	unsigned long center = BUS_ALIGNED(range / 2 + entry);
-	unsigned int seed = *(unsigned int *)center;
-
-	printf("%p - %p = %lu, center=0x%lx, seed=%u\n", &etext, auxv_data.entry, range, center, seed);
 
 	for (int i=0; i<10; i++)
 	{
@@ -684,16 +678,53 @@ static void test20()
 
 static void test21()
 {
-	time_t t;
-	time(&t);
+	void* arr[10] = { 0 };
 
-	srand(t);
-
-	for (int i=0; i<1000; i++)
+	for (int i=0; i<(sizeof(arr) / sizeof(arr[0])); i++)
 	{
-		int r = rand();
-		printf("RANDOM %d %d\n", r, r % 100);
+		arr[i] = uc_aprintf("%d", i);
 	}
+
+	uc_walk_heap(cb_free, cb_alloc);
+	puts("*");
+
+	// ----------------------------------------------
+
+	free(arr[8]); arr[8] = NULL;
+
+	uc_walk_heap(cb_free, cb_alloc);
+	puts("* free(8)");
+	puts("----------------");
+
+	// ----------------------------------------------
+
+	free(arr[5]); arr[5] = NULL;
+
+	uc_walk_heap(cb_free, cb_alloc);
+	puts("* free(5)");
+	puts("----------------");
+
+	// ----------------------------------------------
+
+#if 1
+	void *op = arr[6];
+	void *np = realloc(arr[6], 17);
+	printf("%p:%p\n", op, np);
+	arr[6] = np;
+
+	uc_walk_heap(cb_free, cb_alloc);
+	puts("* realloc");
+	puts("----------------");
+#endif
+
+	// ----------------------------------------------
+
+	for (int i=0; i<(sizeof(arr) / sizeof(arr[0])); i++)
+	{
+		free(arr[i]);
+	}
+
+	uc_walk_heap(cb_free, cb_alloc);
 }
 
 extern void ua_test(long);
@@ -703,8 +734,8 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
-#if 0
-	test1();
+#if 1
+	test21();
 
 #else
 	ua_test(-1);
@@ -713,6 +744,10 @@ int main(int argc, char** argv, char** envs)
 	for (int i=0; i<argc; i++) {
 		printf("argv[%d] = '%s'\n", i, argv[i]);
 	}
+
+	unsigned long entry = (unsigned long)auxv_data.entry;
+	unsigned long range = (void *)&etext - auxv_data.entry;
+	printf("%p - %p = %lu\n", &etext, auxv_data.entry, range);
 
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
 	test1();

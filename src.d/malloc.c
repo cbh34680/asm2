@@ -82,7 +82,7 @@ void *malloc(size_t nbytes)
 }
 
 //#define NALLOC 1024
-#define NALLOC 6
+#define NALLOC 20
 
 static Header *morecore(size_t nu)
 {
@@ -178,13 +178,13 @@ void free(void *ap)
 	freep = pf;
 }
 
-void *realloc(void *ptr, size_t size)
+void *realloc(void *ptr, size_t reqsize)
 {
 	if (ptr)
 	{
-		if (size == 0)
+		if (reqsize == 0)
 		{
-			// size が 0 で ptr が NULL でない場合には、 free(ptr) と等価である
+			// reqsize が 0 で ptr が NULL でない場合には、 free(ptr) と等価である
 
 			free(ptr);
 			return NULL;
@@ -192,18 +192,19 @@ void *realloc(void *ptr, size_t size)
 	}
 	else
 	{
-		//  ptr が NULL の場合には malloc(size) と等価である
+		//  ptr が NULL の場合には malloc(reqsize) と等価である
 
-		return malloc(size);
+		return malloc(reqsize);
 	}
 
 	Header * const pa = (Header *)ptr - 1;
+	const size_t orgsize = (pa->s.size - 1) * sizeof(Header);
 
-	if (size == pa->s.size)
+	if (reqsize == orgsize)
 	{
 		return ptr;
 	}
-	else if (size < pa->s.size)
+	else if (reqsize < orgsize)
 	{
 		// 領域の先頭から、新旧のサイズの小さい方の位置までの範囲の内容は 変更されない。
 
@@ -211,26 +212,40 @@ void *realloc(void *ptr, size_t size)
 		return ptr;
 	}
 
-	// free() と同じ走査で前後の free ブロックを探す
+	// free() と同じ方法で pa を挟む free ブロックを探す
 
-	Header *pf = freep;
-	for (; ; pf=pf->s.ptr)
+	Header *pf;
+
+	for(pf=freep; !(pf < pa && pa < pf->s.ptr); pf=pf->s.ptr)
 	{
-		if (pf < pa && pa < pf->s.ptr)
-			break;
-
 		if(pf->s.ptr <= pf && (pf < pa || pa < pf->s.ptr))
 			break;
 	}
 
-	// pf と pf->s.ptr の間に pa が存在する状態
-	//
-	// [pf] .. [pa] .. [pf->s.ptr]
-	// FREE ---------> FREE
+	freep = pf;
 
+	if ((pa + pa->s.size) == pf->s.ptr)
+	{
+		// merge next block
 
+		Header *save = pf->s.ptr;
+		pf->s.ptr = pf->s.ptr->s.ptr;
 
-	return NULL;
+		save->s.ptr = NULL;
+		pa->s.size += save->s.size;
+
+		return ptr;
+	}
+
+	// create new free
+
+	void *newptr = malloc(reqsize);
+	if (newptr)
+	{
+		memcpy(newptr, ptr, orgsize);
+	}
+
+	return newptr;
 }
 
 void const *uc_get_base(int target)

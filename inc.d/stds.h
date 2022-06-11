@@ -78,18 +78,19 @@ extern char *ua_pwx0(char *dest, const unsigned int src);
 extern char *ua_phx0(char *dest, const unsigned short src);
 extern char *ua_pbx0(char *dest, const unsigned char src);
 
-typedef _Bool (* uc_walk_callback)(const void *addr, size_t size, _Bool isfreep, const void *next);
-extern void const *uc_get_base(int target);
-extern void const *uc_get_freep(void);
-extern void const *uc_walk_freep(uc_walk_callback cb_free);
-extern void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc);
-
 // [5] user func - c
+typedef _Bool (* uc_walk_callback)(const void *addr, size_t size, _Bool isfreep, const void *next);
+
+extern char *uc_aprintf(const char *format, ...);
 extern void uc_easy_abort(const char *assertion,
  const char *file, unsigned int line, const char *function);
+extern void const *uc_get_base(int target);
+extern void const *uc_get_freep(void);
 extern ssize_t uc_prints(const char* s);
 extern ssize_t uc_prints_e(const char* s);
 extern int uc_puts_e(const char* s);
+extern void const *uc_walk_freep(uc_walk_callback cb_free);
+extern void const *uc_walk_heap(uc_walk_callback cb_free, uc_walk_callback cb_alloc);
 
 //
 #define assert(expr) \
