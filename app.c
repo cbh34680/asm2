@@ -706,7 +706,7 @@ static void test21()
 
 	// ----------------------------------------------
 
-	const int idx = 9;
+	const int idx = 6;
 
 	void *op = arr[idx];
 	void *np = realloc(op, 49);

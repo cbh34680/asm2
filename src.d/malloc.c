@@ -240,10 +240,6 @@ void *realloc(void *ptr, size_t size)
 		}
 	}
 
-	// 元のアドレスを解放
-
-	free(ptr);
-
 	// 新しいブロックを確保
 
 	void *newptr = malloc(size);
@@ -253,6 +249,10 @@ void *realloc(void *ptr, size_t size)
 
 		memcpy(newptr, pa + 1, (pa->s.size - 1) * sizeof(Header));
 	}
+
+	// 元のアドレスを解放
+
+	free(ptr);
 
 	return newptr;
 }
