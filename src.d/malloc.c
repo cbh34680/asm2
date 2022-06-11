@@ -117,25 +117,45 @@ void free(void *ap)
 
 	for (; ; pf=pf->s.ptr)
 	{
-		// free --> [pa] <-- free			... free ブロックに挟まれた領域かチェック
-		// [pf]              [pf->s.ptr]
+		// [pf]  .. [pa] ..  [pf->s.ptr]		... 物理的に free ブロックに挟まれた領域
+		// FREE -----------> FREE
 
 		if (pf < pa && pa < pf->s.ptr)
 			break;
 
-		//
+
+		// [pa]  [ppf->s.ptr] ... [pf]  [pa]	... 論理的に free ブロックに挟まれた領域
+		//         FREE           FREE
+		//          ^              |
+		//          |              |
+		//          +--------------+
 
 		if(pf->s.ptr <= pf && (pf < pa || pa < pf->s.ptr))
 			break;
+
+		// pf より前か pf->s.ptr より後ろに pa があるということしか
+		// わからないので、次の free ブロックに移動
+		//
+		// [pa] .. [x] .... [pf] ... [pf->s.ptr]
+		//         FREE --> FREE --> FREE
 	}
 
 	if ((pa + pa->s.size) == pf->s.ptr)
 	{
+		// [pf]  ...   [pa][pf->s.ptr]			... 隣接する後方の free ブロックと結合
+		// FREE ------>    FREE
+
 		pa->s.size += pf->s.ptr->s.size;
 		pa->s.ptr   = pf->s.ptr->s.ptr;
 	}
 	else
 	{
+		// [pf]  ....   [pf->s.ptr]				... 後方の free ブロックにリンク
+		// FREE ------> FREE
+		//               ^
+		//               |
+		//      [pa] ----+
+
 		pa->s.ptr = pf->s.ptr;
 	}
 
@@ -148,6 +168,12 @@ void free(void *ap)
 	{
 		pf->s.ptr = pa;
 	}
+
+	// [pf] .... [pa] .... [pf->s.ptr]
+	// FREE ---> FREE ---> FREE
+	//  ^
+	//  |
+	// freep									... 次のフリー探索はここから始まる
 
 	freep = pf;
 }
@@ -171,13 +197,13 @@ void *realloc(void *ptr, size_t size)
 		return malloc(size);
 	}
 
-	Header *bp = (Header *)ptr - 1;
+	Header * const pa = (Header *)ptr - 1;
 
-	if (size == bp->s.size)
+	if (size == pa->s.size)
 	{
 		return ptr;
 	}
-	else if (size < bp->s.size)
+	else if (size < pa->s.size)
 	{
 		// 領域の先頭から、新旧のサイズの小さい方の位置までの範囲の内容は 変更されない。
 
@@ -185,10 +211,23 @@ void *realloc(void *ptr, size_t size)
 		return ptr;
 	}
 
-	// np: 一つ先のブロック
-	Header *np = bp + bp->s.size;
+	// free() と同じ走査で前後の free ブロックを探す
 
-	
+	Header *pf = freep;
+	for (; ; pf=pf->s.ptr)
+	{
+		if (pf < pa && pa < pf->s.ptr)
+			break;
+
+		if(pf->s.ptr <= pf && (pf < pa || pa < pf->s.ptr))
+			break;
+	}
+
+	// pf と pf->s.ptr の間に pa が存在する状態
+	//
+	// [pf] .. [pa] .. [pf->s.ptr]
+	// FREE ---------> FREE
+
 
 
 	return NULL;
