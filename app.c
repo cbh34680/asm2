@@ -28,6 +28,7 @@ static void test1()
 	assert((s1 - s2) == 16);
 
 	printf("s1=0x%lx d1=0x%lx s2=0x%lx\n", s1, d1, s2);
+	//printf("%lx%lx%lx\n", s1, d1, s2);
 
 	puts(memset(gbuf, ',', 15));
 	gbuf[15]= '\0';
@@ -607,19 +608,23 @@ static void test19()
 
 	printf("%p - %p = %lu, center=0x%lx, seed=%u\n", &etext, auxv_data.entry, range, center, seed);
 
-	for (int i=0; i<100; i++)
+	for (int i=0; i<10; i++)
 	{
-		printf("%d) %d %d\n", i, rand(), rand() % 100);
+		const int rnd = rand();
+		printf("%d) %d %d\n", i, rnd, rnd % 100);
 	}
+
+	puts("*");
 
 	time_t t;
 	time(&t);
 
 	srand(t);
 
-	for (int i=0; i<100; i++)
+	for (int i=0; i<10; i++)
 	{
-		printf("%d) %d %d\n", i, rand(), rand() % 100);
+		const int rnd = rand();
+		printf("%d) %d %d\n", i, rnd, rnd % 100);
 	}
 	
 }
@@ -631,28 +636,31 @@ static void test20()
 
 	srand(t);
 
-	void *arr[50] = { 0 };
+	void *arr[20] = { 0 };
 	int narr = sizeof(arr) / sizeof(arr[0]);
 
 	printf("now=%ld, narr=%d\n", t, narr);
 
-	for (int i=0; i<narr; i++)
+	for (int j=0; j<narr; j++)
 	{
-		int pos = rand() % narr;
-
-		if (arr[pos])
+		for (int i=0; i<narr; i++)
 		{
-			free(arr[pos]);
-			arr[pos] = NULL;
-		}
-		else
-		{
-			size_t size = (rand() % 10240) + 3;
+			int pos = rand() % narr;
 
-			char *p = malloc(size);
-			sprintf(p, "%d", i);
+			if (arr[pos])
+			{
+				free(arr[pos]);
+				arr[pos] = NULL;
+			}
+			else
+			{
+				size_t size = (rand() % 10240) + 3;
 
-			arr[pos] = p;
+				char *p = malloc(size);
+				sprintf(p, "%d", i);
+
+				arr[pos] = p;
+			}
 		}
 	}
 
@@ -676,7 +684,16 @@ static void test20()
 
 static void test21()
 {
+	time_t t;
+	time(&t);
 
+	srand(t);
+
+	for (int i=0; i<1000; i++)
+	{
+		int r = rand();
+		printf("RANDOM %d %d\n", r, r % 100);
+	}
 }
 
 extern void ua_test(long);
@@ -687,7 +704,7 @@ int main(int argc, char** argv, char** envs)
 	//__stack_chk_fail();
 
 #if 0
-	test20();
+	test1();
 
 #else
 	ua_test(-1);
