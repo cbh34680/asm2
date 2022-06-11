@@ -706,16 +706,17 @@ static void test21()
 
 	// ----------------------------------------------
 
-#if 1
-	void *op = arr[6];
-	void *np = realloc(arr[6], 17);
+	const int idx = 9;
+
+	void *op = arr[idx];
+	void *np = realloc(op, 49);
+
 	printf("%p:%p\n", op, np);
-	arr[6] = np;
+	arr[idx] = np;
 
 	uc_walk_heap(cb_free, cb_alloc);
 	puts("* realloc");
 	puts("----------------");
-#endif
 
 	// ----------------------------------------------
 

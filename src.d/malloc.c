@@ -178,13 +178,13 @@ void free(void *ap)
 	freep = pf;
 }
 
-void *realloc(void *ptr, size_t reqsize)
+void *realloc(void *ptr, size_t size)
 {
 	if (ptr)
 	{
-		if (reqsize == 0)
+		if (size == 0)
 		{
-			// reqsize が 0 で ptr が NULL でない場合には、 free(ptr) と等価である
+			// size が 0 で ptr が NULL でない場合には、 free(ptr) と等価である
 
 			free(ptr);
 			return NULL;
@@ -192,19 +192,20 @@ void *realloc(void *ptr, size_t reqsize)
 	}
 	else
 	{
-		//  ptr が NULL の場合には malloc(reqsize) と等価である
+		//  ptr が NULL の場合には malloc(size) と等価である
 
-		return malloc(reqsize);
+		return malloc(size);
 	}
 
-	Header * const pa = (Header *)ptr - 1;
-	const size_t orgsize = (pa->s.size - 1) * sizeof(Header);
+	const size_t nunits = (size + sizeof(Header) - 1) / sizeof(Header) + 1;
 
-	if (reqsize == orgsize)
+	Header * const pa = (Header *)ptr - 1;
+
+	if (nunits == pa->s.size)
 	{
 		return ptr;
 	}
-	else if (reqsize < orgsize)
+	else if (nunits < pa->s.size)
 	{
 		// 領域の先頭から、新旧のサイズの小さい方の位置までの範囲の内容は 変更されない。
 
@@ -222,27 +223,35 @@ void *realloc(void *ptr, size_t reqsize)
 			break;
 	}
 
-	freep = pf;
+	Header * const pn = pf->s.ptr;
 
-	if ((pa + pa->s.size) == pf->s.ptr)
+	if ((pa + pa->s.size) == pn)
 	{
-		// merge next block
+		if (nunits <= (pa->s.size + pn->s.size))
+		{
+			// merge next block
 
-		Header *save = pf->s.ptr;
-		pf->s.ptr = pf->s.ptr->s.ptr;
+			pf->s.ptr = pn->s.ptr;
 
-		save->s.ptr = NULL;
-		pa->s.size += save->s.size;
+			pn->s.ptr = NULL;
+			pa->s.size += pn->s.size;
 
-		return ptr;
+			return ptr;
+		}
 	}
 
-	// create new free
+	// 元のアドレスを解放
 
-	void *newptr = malloc(reqsize);
+	free(ptr);
+
+	// 新しいブロックを確保
+
+	void *newptr = malloc(size);
 	if (newptr)
 	{
-		memcpy(newptr, ptr, orgsize);
+		// データ部分のみコピー
+
+		memcpy(newptr, pa + 1, (pa->s.size - 1) * sizeof(Header));
 	}
 
 	return newptr;
