@@ -1,8 +1,29 @@
 #include <stds.h>
 
+//
+// backtrace
+// "-fno-omit-frame-pointer" のオプションが必要
+//
+#define USE_BT
+
+//
+// alloca()
+//
+#define USE_ALLOCA
+
+#ifdef USE_ALLOCA
+	// alloca を使うときは "-O0" にしないと segfault
+	// (最適化がある状態で) gcc のコード意外で sp をいじるのは NG?
+
+	#define ALLOCA_OPTIMIZE		__attribute__((optimize("O0")))
+
+#else
+	#define ALLOCA_OPTIMIZE
+#endif
+
 char gbuf[1024];
 
-static void test1()
+static ALLOCA_OPTIMIZE void test1()
 {
 	char haystack[] = "Abfhi\0aBc";
 
@@ -324,7 +345,7 @@ static void test9()
 	puts("*");
 }
 
-static void test10(long a, long b, long c)
+static ALLOCA_OPTIMIZE void test10(long a, long b, long c)
 {
 	const void* s1 = ua_getsp();
 	const void* d1 = strdupa("HEllO wOrlD");
@@ -343,7 +364,7 @@ static void test11()
 	void *bp = NULL, *bp_first = NULL;
 	void *caller = (void *)-1;
 
-	for (int i=0; i<9999 && caller; i++)
+	for (int i=0; i<99 && caller; i++)
 	{
 		caller = ua_bt_caller(i, &bp);
 
@@ -355,7 +376,7 @@ static void test11()
 		printf("%lx\t%lx\n", caller, bp);
 	}
 
-	printf("0x%lx (%d)\n", bp-bp_first, bp-bp_first);
+	printf("0x%lx (%d)\n", bp - bp_first, bp - bp_first);
 }
 
 #if 0
@@ -538,7 +559,7 @@ static void test15()
 	assert(n1 >= n2);
 }
 
-static void test16()
+static ALLOCA_OPTIMIZE void test16()
 {
 	char buf[96] = { 0 };
 
@@ -706,10 +727,10 @@ static void test21()
 
 	// ----------------------------------------------
 
-	const int idx = 6;
+	const int idx = 4;
 
 	void *op = arr[idx];
-	void *np = realloc(op, 49);
+	void *np = realloc(op, 17);
 
 	printf("%p:%p\n", op, np);
 	arr[idx] = np;
@@ -728,6 +749,35 @@ static void test21()
 	uc_walk_heap(cb_free, cb_alloc);
 }
 
+static void test22()
+{
+				//0123456789012345678901234567890
+	strcpy(gbuf, "          abc           ");
+	puts(memcpy(gbuf + 3, gbuf + 10, 3));
+	puts(gbuf);
+
+	strcpy(gbuf, "          abc           ");
+	puts(memcpy(gbuf + 11, gbuf + 10, 3));
+	puts(gbuf);
+
+	strcpy(gbuf, "          abc           ");
+	puts(memcpy(gbuf + 9, gbuf + 10, 3));
+	puts(gbuf);
+
+	//
+	strcpy(gbuf, "          abc           ");
+	puts(memmove(gbuf + 11, gbuf + 10, 3));
+	puts(gbuf);
+
+	strcpy(gbuf, "          abc           ");
+	puts(memmove(gbuf + 10, gbuf + 10, 3));
+	puts(gbuf);
+
+	strcpy(gbuf, "          abc           ");
+	puts(memmove(gbuf + 9, gbuf + 10, 3));
+	puts(gbuf);
+}
+
 extern void ua_test(long);
 
 int main(int argc, char** argv, char** envs)
@@ -735,7 +785,7 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
-#if 1
+#if 0
 	test21();
 
 #else
@@ -750,8 +800,10 @@ int main(int argc, char** argv, char** envs)
 	unsigned long range = (void *)&etext - auxv_data.entry;
 	printf("%p - %p = %lu\n", &etext, auxv_data.entry, range);
 
+#ifdef USE_ALLOCA
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
 	test1();
+#endif
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
 	test2();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3");
@@ -768,10 +820,14 @@ int main(int argc, char** argv, char** envs)
 	test8();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 9");
 	test9();
+#ifdef USE_ALLOCA
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 10");
 	test10(1, 2, 3);
+#endif
+#ifdef USE_BT
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 11");
 	test11();
+#endif
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 12");
 	test12();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 13");
@@ -781,8 +837,10 @@ int main(int argc, char** argv, char** envs)
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 15");
 	test15();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 16");
+#ifdef USE_ALLOCA
 	test16();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 17");
+#endif
 	test17();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 18");
 	test18();
@@ -792,6 +850,8 @@ int main(int argc, char** argv, char** envs)
 	test20();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 21");
 	test21();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 22");
+	test22();
 #endif
 
 	return 2;

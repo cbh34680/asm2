@@ -19,9 +19,9 @@ set verbose on
 
 tui enable
 
-layout src
-#layout asm
-#layout regs
+#layout src
+layout asm
+layout regs
 
 #layout split
 
@@ -43,8 +43,8 @@ define hook-continue
 end
 
 #b _start
-b main
-#b _ua_test
+#b main
+b ua_test
 
 run
 d

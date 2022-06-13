@@ -1,27 +1,39 @@
 %include "comm.s"
 
-global memmove
+extern	memcpy
+global	memmove
 
 ;
 		section		.text
 
 ;
 memmove:
-		add			rdi, rdx
-		dec			rdi
-
+		; copy-size is zero
 		test		rdx, rdx
 		jz			.end
 
-		add			rsi, rdx
-		dec			rsi
-		mov			rcx, rdx
-		std
+		; src < dst
+		cmp			rdi, rsi
+		jg			.main
 
+		; src == dst
+		je			.end
+
+
+		; dst < src
+		call		memcpy
+		ret
+
+.main:
+		lea			rdi, rdi[rdx - 1]
+		lea			rsi, rsi[rdx - 1]
+		mov			rcx, rdx
+
+		std
 		rep movsb
+		inc			rdi
 
 .end:
 		mov			rax, rdi
-		inc			rax
 
 		ret

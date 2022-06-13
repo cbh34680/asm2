@@ -19,9 +19,13 @@ ccopts=''
 
 ccopts="${ccopts} -I${PWD}/inc.d"
 
-ccopts="${ccopts} -std=c11 -g"
-ccopts="${ccopts} -O0"
+ccopts="${ccopts} -std=c11"
+ccopts="${ccopts} -g"
+ccopts="${ccopts} -O2"
 ccopts="${ccopts} -static"
+
+#ccopts="${ccopts} -fomit-frame-pointer"
+ccopts="${ccopts} -fno-omit-frame-pointer"
 
 #ccopts="${ccopts} -fcaller-saves"
 
@@ -31,6 +35,7 @@ ccopts="${ccopts} -fno-builtin"
 ccopts="${ccopts} -fno-asynchronous-unwind-tables"
 ccopts="${ccopts} -fno-pic"
 ccopts="${ccopts} -fno-pie"
+
 
 #ccopts="${ccopts} -fstack-protector"
 ccopts="${ccopts} -fno-stack-protector"
@@ -65,6 +70,7 @@ $cc ${ccopts} -c src.d/str.c -o obj.d/str.o
 
 $cc ${ccopts} -c app.c -o app.o -v
 $cc ${ccopts} -c app.c -E -P -C -o app.pc
+$cc ${ccopts} -c app.c -S -fverbose-asm -o app.s
 
 #$cc ${ccopts} -shared -fPIC libmy.c -o libmy.so
 

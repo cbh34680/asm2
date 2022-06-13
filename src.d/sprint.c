@@ -134,6 +134,8 @@ static void set_data(char type, __builtin_va_list ap, struct data_st *data)
 
 static size_t val_strlen(struct data_st const *data)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 	switch (data->vt)
 	{
 		case VT_INT:
@@ -179,12 +181,15 @@ static size_t val_strlen(struct data_st const *data)
 		case VT_ADDRESS:
 			return 2 + 16;	// "0x" + ffff ffff ffff ffff
 	}
+#pragma GCC diagnostic pop
 
 	return 0;
 }
 
 static void write_data(char *buff, const struct data_st *data)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 	switch (data->vt)
 	{
 		case VT_CHAR:
@@ -265,6 +270,7 @@ static void write_data(char *buff, const struct data_st *data)
 			break;
 		}
 	}
+#pragma GCC diagnostic pop
 }
 
 int vsprintf(char *str, const char *format, __builtin_va_list ap)

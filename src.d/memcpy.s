@@ -8,8 +8,8 @@ global memcpy
 ;
 memcpy:
 		mov			rcx, rdx
-		cld
 
+		cld
 		rep movsb
 
 		mov			rax, rdi
