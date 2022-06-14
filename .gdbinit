@@ -42,9 +42,9 @@ define hook-continue
   refresh
 end
 
-#b _start
+b _start
 #b main
-b ua_test
+#b ua_test
 
 run
 d

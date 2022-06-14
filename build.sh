@@ -21,7 +21,7 @@ ccopts="${ccopts} -I${PWD}/inc.d"
 
 ccopts="${ccopts} -std=c11"
 ccopts="${ccopts} -g"
-ccopts="${ccopts} -O2"
+ccopts="${ccopts} -O0"
 ccopts="${ccopts} -static"
 
 #ccopts="${ccopts} -fomit-frame-pointer"
@@ -95,6 +95,7 @@ nasm ${nasmopts} src.d/memcpy.s -o obj.d/memcpy.o
 nasm ${nasmopts} src.d/memmove.s -o obj.d/memmove.o
 nasm ${nasmopts} src.d/memset.s -o obj.d/memset.o
 nasm ${nasmopts} src.d/pNx.s -o obj.d/pNx.o
+nasm ${nasmopts} src.d/setjmp.s -o obj.d/setjmp.o
 nasm ${nasmopts} src.d/stack.s -o obj.d/stack.o
 nasm ${nasmopts} src.d/start.s -o obj.d/start.o
 nasm ${nasmopts} src.d/strchr.s -o obj.d/strchr.o
@@ -141,6 +142,7 @@ obj.d/memset.o \
 obj.d/pNx.o \
 obj.d/print.o \
 obj.d/rand.o \
+obj.d/setjmp.o \
 obj.d/sprint.o \
 obj.d/stack.o \
 obj.d/strchr.o \

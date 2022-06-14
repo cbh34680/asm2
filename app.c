@@ -778,6 +778,32 @@ static void test22()
 	puts(gbuf);
 }
 
+jmp_buf jmpbuf;
+
+void foo()
+{
+	longjmp(jmpbuf, 100);
+}
+
+static void test23()
+{
+	void *ip = ua_getip();
+	printf("%p\n", ip);
+
+	int r = setjmp(jmpbuf);
+
+	if (r == 0)
+	{
+		foo();
+	}
+	else
+	{
+		printf("%d\n", r);
+	}
+
+	puts("end");
+}
+
 extern void ua_test(long);
 
 int main(int argc, char** argv, char** envs)
@@ -785,8 +811,8 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
-#if 0
-	test21();
+#if 1
+	test23();
 
 #else
 	ua_test(-1);
@@ -800,10 +826,10 @@ int main(int argc, char** argv, char** envs)
 	unsigned long range = (void *)&etext - auxv_data.entry;
 	printf("%p - %p = %lu\n", &etext, auxv_data.entry, range);
 
-#ifdef USE_ALLOCA
+ #ifdef USE_ALLOCA
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
 	test1();
-#endif
+ #endif
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
 	test2();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3");
@@ -820,14 +846,17 @@ int main(int argc, char** argv, char** envs)
 	test8();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 9");
 	test9();
-#ifdef USE_ALLOCA
+
+ #ifdef USE_ALLOCA
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 10");
 	test10(1, 2, 3);
-#endif
-#ifdef USE_BT
+ #endif
+
+ #ifdef USE_BT
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 11");
 	test11();
-#endif
+ #endif
+
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 12");
 	test12();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 13");
@@ -837,10 +866,12 @@ int main(int argc, char** argv, char** envs)
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 15");
 	test15();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 16");
-#ifdef USE_ALLOCA
+
+ #ifdef USE_ALLOCA
 	test16();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 17");
-#endif
+ #endif
+
 	test17();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 18");
 	test18();
@@ -852,7 +883,11 @@ int main(int argc, char** argv, char** envs)
 	test21();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 22");
 	test22();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 23");
+	test23();
 #endif
+
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ done");
 
 	return 2;
 }

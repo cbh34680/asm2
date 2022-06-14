@@ -1,6 +1,7 @@
 %include "comm.s"
 
 global	ua_getsp
+global	ua_getip
 global	ua_bt_caller
 
 ;
@@ -10,6 +11,12 @@ ua_getsp:
 
 		ret
 
+;
+ua_getip:
+		mov			rax, [rsp]
+		ret
+
+;
 ua_bt_caller:
 		enter		0, 0		; need make-frame
 

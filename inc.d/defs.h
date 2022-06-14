@@ -174,6 +174,13 @@ typedef struct
 va_list[1];
 
 //
+typedef struct
+{
+	volatile unsigned long regs[8];
+}
+jmp_buf[1];
+
+//
 struct auxv_data_type
 {
 	Elf64_Ehdr const *sysi_ehdr;
