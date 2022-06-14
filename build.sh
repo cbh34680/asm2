@@ -21,30 +21,37 @@ ccopts="${ccopts} -I${PWD}/inc.d"
 
 ccopts="${ccopts} -std=c11"
 ccopts="${ccopts} -g"
-ccopts="${ccopts} -O0"
+ccopts="${ccopts} -O2"
 ccopts="${ccopts} -static"
+
+## ! disable cfi
+ccopts="${ccopts} -fno-asynchronous-unwind-tables"
 
 #ccopts="${ccopts} -fomit-frame-pointer"
 ccopts="${ccopts} -fno-omit-frame-pointer"
+#ccopts="${ccopts} -mno-omit-leaf-frame-pointer"
 
 #ccopts="${ccopts} -fcaller-saves"
-
 ccopts="${ccopts} -ffreestanding"
 ccopts="${ccopts} -nostartfiles"
+
 ccopts="${ccopts} -fno-builtin"
-ccopts="${ccopts} -fno-asynchronous-unwind-tables"
 ccopts="${ccopts} -fno-pic"
 ccopts="${ccopts} -fno-pie"
-
+ccopts="${ccopts} -fno-stack-protector"
 
 #ccopts="${ccopts} -fstack-protector"
-ccopts="${ccopts} -fno-stack-protector"
 #ccopts="${ccopts} -fstack-protector-strong"
 #ccopts="${ccopts} -fstack-protector-all"
 
 ccopts="${ccopts} -m64"
 ccopts="${ccopts} -masm=intel"
 ccopts="${ccopts} -mno-red-zone"
+
+#ccopts="${ccopts} -mcmodel=small"
+#ccopts="${ccopts} -mcmodel=kernel"
+
+#ccopts="${ccopts} -mno-80387"
 
 #ccopts="${ccopts} -mpreferred-stack-boundary=3"
 ##ccopts="${ccopts} -mincoming-stack-boundary=3"
@@ -55,6 +62,8 @@ ccopts="${ccopts} -nostdinc"
 ccopts="${ccopts} -Wall"
 ccopts="${ccopts} -Wno-unused-variable"
 ccopts="${ccopts} -Wno-unused-but-set-variable"
+
+## ?? -mpush-args -mno-accumulate-outgoing-args -mno-stack-arg-probe
 
 
 $cc ${ccopts} -c src.d/abort.c -o obj.d/abort.o
