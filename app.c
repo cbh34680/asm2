@@ -9,21 +9,21 @@
 //
 // alloca()
 //
-#define USE_ALLOCA
+#define USE_STACK_MODIFY
 
-#ifdef USE_ALLOCA
+#ifdef USE_STACK_MODIFY
 	// alloca を使うときは "-O0" にしないと segfault
 	// (最適化がある状態で) gcc のコード意外で sp をいじるのは NG?
 
-	#define ALLOCA_OPTIMIZE		__attribute__((optimize("O0")))
+	#define STACK_OPTLVL		__attribute__((optimize("O0")))
 
 #else
-	#define ALLOCA_OPTIMIZE
+	#define STACK_OPTLVL
 #endif
 
 char gbuf[1024];
 
-static ALLOCA_OPTIMIZE void test1()
+static STACK_OPTLVL void test1()
 {
 	char haystack[] = "Abfhi\0aBc";
 
@@ -40,6 +40,9 @@ static ALLOCA_OPTIMIZE void test1()
 
 	puts(pos1 ? pos1 : "NULL");
 	puts(pos2 ? pos2 : "NULL");
+
+	void *ip = ua_getip();
+	printf("ip=%p\n", ip);
 
 	const void* s1 = ua_getsp();
 	char* d1 = alloca(16);
@@ -345,7 +348,7 @@ static void test9()
 	puts("*");
 }
 
-static ALLOCA_OPTIMIZE void test10(long a, long b, long c)
+static STACK_OPTLVL void test10(long a, long b, long c)
 {
 	const void* s1 = ua_getsp();
 	const void* d1 = strdupa("HEllO wOrlD");
@@ -559,7 +562,7 @@ static void test15()
 	assert(n1 >= n2);
 }
 
-static ALLOCA_OPTIMIZE void test16()
+static STACK_OPTLVL void test16()
 {
 	char buf[96] = { 0 };
 
@@ -780,28 +783,46 @@ static void test22()
 
 jmp_buf jmpbuf;
 
-void foo()
+static STACK_OPTLVL void test23()
 {
-	longjmp(jmpbuf, 100);
-}
-
-static void test23()
-{
-	void *ip = ua_getip();
-	printf("%p\n", ip);
-
 	int r = setjmp(jmpbuf);
 
 	if (r == 0)
 	{
-		foo();
+		longjmp(jmpbuf, 100);
 	}
 	else
 	{
-		printf("%d\n", r);
+		printf("r=%d\n", r);
+	}
+}
+
+static void test24()
+{
+	int getval(int index)
+	{
+		int r = 0;
+
+		void *labels[] = {
+			&&LABEL0,
+			&&LABEL1,
+			&&LABEL2,
+			&&LABEL3,
+		};
+
+		goto *labels[index];
+
+LABEL3: r++;
+LABEL2: r++;
+LABEL1: r++;
+LABEL0:
+		return r;
 	}
 
-	puts("end");
+	for (int i=0; i<4; i++)
+	{
+		printf("%d=%d\n", i, getval(i));
+	}
 }
 
 extern void ua_test(long);
@@ -811,7 +832,7 @@ int main(int argc, char** argv, char** envs)
 	//extern void __stack_chk_fail();
 	//__stack_chk_fail();
 
-#if 1
+#if 0
 	test23();
 
 #else
@@ -826,10 +847,8 @@ int main(int argc, char** argv, char** envs)
 	unsigned long range = (void *)&etext - auxv_data.entry;
 	printf("%p - %p = %lu\n", &etext, auxv_data.entry, range);
 
- #ifdef USE_ALLOCA
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
 	test1();
- #endif
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
 	test2();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3");
@@ -846,11 +865,8 @@ int main(int argc, char** argv, char** envs)
 	test8();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 9");
 	test9();
-
- #ifdef USE_ALLOCA
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 10");
 	test10(1, 2, 3);
- #endif
 
  #ifdef USE_BT
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 11");
@@ -866,12 +882,8 @@ int main(int argc, char** argv, char** envs)
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 15");
 	test15();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 16");
-
- #ifdef USE_ALLOCA
 	test16();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 17");
- #endif
-
 	test17();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 18");
 	test18();
@@ -885,6 +897,8 @@ int main(int argc, char** argv, char** envs)
 	test22();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 23");
 	test23();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 24");
+	test24();
 #endif
 
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ done");
