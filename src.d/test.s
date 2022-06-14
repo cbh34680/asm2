@@ -7,12 +7,16 @@ global ua_test
 		section		.text
 
 ua_test:
-		mov eax, -2
-		cdqe
+		enter		0x100, 0
 
-		mov rdx, 0
-		mov rax, -2
-		cqo
+		mov			qword [rbp - 8], 0x2
+		shl			qword [rbp - 8], 2
+		add			qword [rbp - 8], 2
 
+		cmp			qword [rbp - 8], 0
+
+		;test		qword [rbp - 8], qword [rbp - 8]
+
+		leave
 		ret
 

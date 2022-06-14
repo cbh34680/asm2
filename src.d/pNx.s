@@ -119,6 +119,7 @@ ua_pNx:
 		; check zero-flag
 		mov			eax, [rbp - 24]
 		test		eax, eax
+		;cmp			dword [rbp - 24], 0
 		jz			.nopad
 
 		; zero-padding
