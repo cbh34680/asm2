@@ -46,7 +46,7 @@ b _start
 #b main
 #b ua_test
 
-run
+run > /dev/null
 d
 
 refresh

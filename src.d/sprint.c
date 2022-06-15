@@ -388,13 +388,17 @@ int printf(const char *format, ...)
 	const int len = vsprintf(NULL, format, ap);
 	__builtin_va_end(ap);
 
-	char str[len + 1];
-	//char *str = alloca(len + 1);
+	void *prevsp = ua_getsp();
+
+	//char str[len + 1];
+	char *str = alloca(len + 1);
 
 	const int r = vsprintf(str, format, ap2);
 	__builtin_va_end(ap2);
 
 	uc_prints(str);
+
+	ua_setsp(prevsp);
 
 	return r;
 }

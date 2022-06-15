@@ -6,24 +6,9 @@
 //
 #define USE_BT
 
-//
-// alloca()
-//
-#define USE_STACK_MODIFY
-
-#ifdef USE_STACK_MODIFY
-	// alloca を使うときは "-O0" にしないと segfault
-	// (最適化がある状態で) gcc のコード意外で sp をいじるのは NG?
-
-	#define STACK_OPTLVL		__attribute__((optimize("O0")))
-
-#else
-	#define STACK_OPTLVL
-#endif
-
 char gbuf[1024];
 
-static STACK_OPTLVL void test1()
+static void test01()
 {
 	char haystack[] = "Abfhi\0aBc";
 
@@ -41,19 +26,6 @@ static STACK_OPTLVL void test1()
 	puts(pos1 ? pos1 : "NULL");
 	puts(pos2 ? pos2 : "NULL");
 
-	void *ip = ua_getip();
-	printf("ip=%p\n", ip);
-
-	const void* s1 = ua_getsp();
-	char* d1 = alloca(16);
-	const void* s2 = ua_getsp();
-
-	assert(s1 == d1);
-	assert((s1 - s2) == 16);
-
-	printf("s1=0x%lx d1=0x%lx s2=0x%lx\n", s1, d1, s2);
-	//printf("%lx%lx%lx\n", s1, d1, s2);
-
 	puts(memset(gbuf, ',', 15));
 	gbuf[15]= '\0';
 
@@ -67,7 +39,7 @@ static STACK_OPTLVL void test1()
 	printf("log10(%d)+1 = %d\n", n, x);
 }
 
-static void test2()
+static void test02()
 {
 	const char* s = "ABCDE";
 
@@ -88,14 +60,14 @@ static void test2()
 	puts(strcpy(sz, s));
 }
 
-static void test3()
+static void test03()
 {
 	const int fd = open("/home/user/asm/a.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
 
 	close(fd);
 }
 
-static void test4()
+static void test04()
 {
 	puts("   1234567890123456789");
 	puts("   0123456789012345678");
@@ -110,7 +82,7 @@ static void test4()
 	printf("0x[%s]\n", ua_phx(gbuf, 143));
 }
 
-static void test5()
+static void test05()
 {
 	int x = atoi("111a");
 	printf("%d\n", x);
@@ -129,7 +101,7 @@ static void test5()
 */
 }
 
-static void test6()
+static void test06()
 {
 	printf("%d\n", memcmp("032", "022", 4));
 	printf("%d\n", memcmp("022", "022", 4));
@@ -146,9 +118,9 @@ int global_data2 = 200;
 int global_bss1;
 int global_bss2;
 
-static void test7()
+static void test07()
 {
-	printf("test7=%lx\n", test7);
+	printf("test07=%lx\n", test07);
 	printf("etext=%lx\n", &etext);
 	printf("global_data1=%lx\n", &global_data1);
 	printf("global_data2=%lx\n", &global_data2);
@@ -190,7 +162,7 @@ static void prt_(char const *name, void const *pos)
 
 #define prt(v) prt_(#v, (v))
 
-static void test8()
+static void test08()
 {
 	puts("@@ init @@");
 	void *left = sbrk(0);
@@ -308,7 +280,7 @@ static void test8()
 	prt(freep);
 }
 
-static void test9()
+static void test09()
 {
 	void *curr = NULL;
 	void *prev = NULL;
@@ -348,7 +320,7 @@ static void test9()
 	puts("*");
 }
 
-static STACK_OPTLVL void test10(long a, long b, long c)
+static void test10(long a, long b, long c)
 {
 	const void* s1 = ua_getsp();
 	const void* d1 = strdupa("HEllO wOrlD");
@@ -360,6 +332,9 @@ static STACK_OPTLVL void test10(long a, long b, long c)
 
 	assert((s1 - s2) == 16);
 	assert(d1 == s2);
+
+	ua_setsp(s1);
+	printf("last=%p\n", ua_getsp());
 }
 
 static void test11()
@@ -562,14 +537,28 @@ static void test15()
 	assert(n1 >= n2);
 }
 
-static STACK_OPTLVL void test16()
+static void test16(int a, int b)
 {
 	char buf[96] = { 0 };
 
 	memset(buf, '_', sizeof(buf) - 1);
 
-	char *s = alloca(16);
+	const void *prev = ua_getsp();
+	void *s = alloca(16);
 	memset(s, 'A', 16);
+
+	const void *post = ua_getsp();
+	ua_setsp(prev);
+	const void *last = ua_getsp();
+
+	assert(prev > s);
+	assert(s == post);
+	assert(prev == last);
+
+	printf("prev=%p\n", prev);
+	printf("s   =%p\n", s);
+	printf("post=%p\n", post);
+	printf("last=%p\n", last);
 
 	//
 	memset(buf, '_', sizeof(buf) - 1);
@@ -783,7 +772,7 @@ static void test22()
 
 jmp_buf jmpbuf;
 
-static STACK_OPTLVL void test23()
+static void test23()
 {
 	int r = setjmp(jmpbuf);
 
@@ -797,8 +786,31 @@ static STACK_OPTLVL void test23()
 	}
 }
 
+#ifdef __clang__
+int getval(int index)
+{
+	int r = 0;
+
+	void *labels[] = {
+		&&LABEL0,
+		&&LABEL1,
+		&&LABEL2,
+		&&LABEL3,
+	};
+
+	goto *labels[index];
+
+LABEL3: r++;
+LABEL2: r++;
+LABEL1: r++;
+LABEL0:
+	return r;
+}
+#endif
+
 static void test24()
 {
+#ifndef __clang__
 	int getval(int index)
 	{
 		int r = 0;
@@ -818,12 +830,34 @@ LABEL1: r++;
 LABEL0:
 		return r;
 	}
+#endif
 
 	for (int i=0; i<4; i++)
 	{
 		printf("%d=%d\n", i, getval(i));
 	}
 }
+
+static void test25()
+{
+	void *ip = ua_getip();
+	printf("ip=%p\n", ip);
+
+	const void* s0 = ua_getsp();
+	const void* d0 = alloca(0);
+	const void* s1 = ua_getsp();
+	const void* d1 = alloca(16);
+	const void* s2 = ua_getsp();
+	ua_setsp(s1);
+	const void* s3 = ua_getsp();
+
+	assert(s0 == s1);
+	assert(s1 > d1);
+	assert((s1 - d1) == 16);
+
+	printf("s0=%p\nd0=%p\ns1=%p\nd1=%p\ns2=%p\ns3=%p\n", s0, d0, s1, d1, s2, s3);
+}
+
 
 extern void ua_test(long);
 
@@ -833,7 +867,9 @@ int main(int argc, char** argv, char** envs)
 	//__stack_chk_fail();
 
 #if 0
-	test23();
+	test10(1, 2, 3);
+	//test25();
+	//test16(1, 2);
 
 #else
 	ua_test(-1);
@@ -848,23 +884,23 @@ int main(int argc, char** argv, char** envs)
 	printf("%p - %p = %lu\n", &etext, auxv_data.entry, range);
 
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
-	test1();
+	test01();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
-	test2();
+	test02();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3");
-	test3();
+	test03();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 4");
-	test4();
+	test04();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 5");
-	test5();
+	test05();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 6");
-	test6();
+	test06();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 7");
-	test7();
+	test07();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 8");
-	test8();
+	test08();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 9");
-	test9();
+	test09();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 10");
 	test10(1, 2, 3);
 
@@ -882,7 +918,7 @@ int main(int argc, char** argv, char** envs)
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 15");
 	test15();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 16");
-	test16();
+	test16(1, 2);
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 17");
 	test17();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 18");
@@ -899,6 +935,8 @@ int main(int argc, char** argv, char** envs)
 	test23();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 24");
 	test24();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 25");
+	test25();
 #endif
 
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ done");

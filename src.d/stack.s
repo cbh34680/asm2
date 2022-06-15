@@ -1,6 +1,7 @@
 %include "comm.s"
 
 global	ua_getsp
+global	ua_setsp
 global	ua_getip
 global	ua_bt_caller
 
@@ -8,8 +9,13 @@ global	ua_bt_caller
 ua_getsp:
 		mov			rax, rsp
 		add			rax, 0x8
-
 		ret
+
+;
+ua_setsp:
+		mov			rax, [rsp]
+		mov			rsp, rdi
+		jmp			rax
 
 ;
 ua_getip:

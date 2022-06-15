@@ -38,5 +38,8 @@ longjmp:
 		mov			rsp, [rdi + 0x30]
 		mov			rsi, [rdi + 0x38]
 
+		; for "call setjmp" return address stack
+		pop			rdx
+
 		jmp			rsi
 ;

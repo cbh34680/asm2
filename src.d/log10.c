@@ -64,8 +64,19 @@ static double myldexp(double x, int exp)
   return y.d;
 }
 
-#define LOG2 0.6931471805599453094172321214581765680755L
-#define SQRT2 1.41421356237309504880168872421L
+#ifdef __clang__
+  // long double "L"
+  #define LOG2 0.6931471805599453094172321214581765680755L
+  #define SQRT2 1.41421356237309504880168872421L
+
+#else
+  // but combile error (-mno-80387), and set "F"
+  // 
+  // error: x87 register return with x87 disabled
+  //
+  #define LOG2 0.6931471805599453094172321214581765680755F
+  #define SQRT2 1.41421356237309504880168872421F
+#endif
  
 static double mylog(double x)
 {

@@ -68,6 +68,7 @@ extern long ua_atoul(const char *nptr);
 extern void *ua_bt_caller(int deep, void *bp);
 extern void *ua_getip(void);
 extern void *ua_getsp(void);
+extern void ua_setsp(const void *newsp);
 extern char *ua_itoa(int value, char *str);
 extern char *ua_ltoa(long value, char *str);
 extern char *ua_uitoa(unsigned int value, char *str);

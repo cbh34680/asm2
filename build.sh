@@ -51,7 +51,7 @@ ccopts="${ccopts} -mno-red-zone"
 #ccopts="${ccopts} -mcmodel=small"
 #ccopts="${ccopts} -mcmodel=kernel"
 
-#ccopts="${ccopts} -mno-80387"
+ccopts="${ccopts} -mno-80387"
 
 #ccopts="${ccopts} -mpreferred-stack-boundary=3"
 ##ccopts="${ccopts} -mincoming-stack-boundary=3"
