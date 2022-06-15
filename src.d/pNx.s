@@ -78,12 +78,10 @@ ua_pbx0:
 ; ----------------- main
 ;
 ua_pNx:
-		;  -1, -23 ... make string
-		; -24, -27 ... zero-flag
+		; -32, -24 ... -----------
+		; -24, -20 ... zero-flag
+		; -20,   0 ... make string
 		enter		32, 0
-
-		; backup
-		push		rbx
 
 		; mark stack-overflow
 		REDZONE_MARK
@@ -91,15 +89,15 @@ ua_pNx:
 		; save zero-flag
 		mov			[rbp - 24], eax
 
-		; rbx = &outbuf[N] (0 origin)
-		lea			rbx, [rbp - 1]
+		; rdx = &outbuf[N] (0 origin)
+		lea			rdx, [rbp - 1]
 
 		; outbuf[N + 1] = '\0'
-		mov			byte [rbx], 0x0
+		mov			byte [rdx], 0x0
 
 .loop:
 		; outpos--
-		dec			rbx
+		dec			rdx
 
 		; rax: input
 		mov			rax, rsi
@@ -108,18 +106,16 @@ ua_pNx:
 		and			eax, 0xf
 
 		; load char
-		mov			al, _HEXCHARS[rax]
+		mov			al, _HEXCHARS[eax]
 
 		; store
-		mov			[rbx], al
+		mov			[rdx], al
 
-		; rax: input = input >> 4
+		; rsi: input = input >> 4
 		shr			rsi, 4
 
 		; check zero-flag
-		mov			eax, [rbp - 24]
-		test		eax, eax
-		;cmp			dword [rbp - 24], 0
+		cmp			dword [rbp - 24], 0
 		jz			.nopad
 
 		; zero-padding
@@ -135,11 +131,11 @@ ua_pNx:
 		mov			rax, rdi
 
 		; prepare memcpy (src)
-		mov			rsi, rbx
+		mov			rsi, rdx
 
 		; prepare memcpy (size)
 		mov			rcx, rbp
-		sub			rcx, rbx
+		sub			rcx, rdx
 
 		; do memcpy
 		cld
@@ -147,8 +143,6 @@ ua_pNx:
 
 		; check stack-overflow
 		REDZONE_CHECK
-
-		pop			rbx
 
 		leave
 		ret

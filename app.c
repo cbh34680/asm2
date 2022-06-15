@@ -497,6 +497,18 @@ static void test13()
 	puts(ua_pgx(gbuf, ua_atoul("18446744073709551615")));	// UL max
 	puts(ua_pgx(gbuf, ua_atoul("18446744073709551616")));
 
+	puts("* 04");
+	puts(ua_pwx0(gbuf, atoi("4294967295")));		// UI max
+	puts(ua_pwx0(gbuf, atoi("4294967296")));
+
+	puts("* 05");
+	puts(ua_pgx0(gbuf, ua_atoul("4294967295")));		// UI max
+	puts(ua_pgx0(gbuf, ua_atoul("4294967296")));
+
+	puts("* 06");
+	puts(ua_pgx0(gbuf, ua_atoul("18446744073709551615")));	// UL max
+	puts(ua_pgx0(gbuf, ua_atoul("18446744073709551616")));
+
 	//
 
 	puts(ua_itoa( 2147483647, gbuf));
