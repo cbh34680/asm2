@@ -103,6 +103,7 @@ nasm ${nasmopts} src.d/memcmp.s -o obj.d/memcmp.o
 nasm ${nasmopts} src.d/memcpy.s -o obj.d/memcpy.o
 nasm ${nasmopts} src.d/memmove.s -o obj.d/memmove.o
 nasm ${nasmopts} src.d/memset.s -o obj.d/memset.o
+nasm ${nasmopts} src.d/pNb.s -o obj.d/pNb.o
 nasm ${nasmopts} src.d/pNx.s -o obj.d/pNx.o
 nasm ${nasmopts} src.d/setjmp.s -o obj.d/setjmp.o
 nasm ${nasmopts} src.d/stack.s -o obj.d/stack.o
@@ -148,6 +149,7 @@ obj.d/memcmp.o \
 obj.d/memcpy.o \
 obj.d/memmove.o \
 obj.d/memset.o \
+obj.d/pNb.o \
 obj.d/pNx.o \
 obj.d/print.o \
 obj.d/rand.o \

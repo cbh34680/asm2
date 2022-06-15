@@ -73,6 +73,16 @@ extern char *ua_itoa(int value, char *str);
 extern char *ua_ltoa(long value, char *str);
 extern char *ua_uitoa(unsigned int value, char *str);
 extern char *ua_ultoa(unsigned long value, char *str);
+
+extern char *ua_pgb(char *dest, const unsigned long src);
+extern char *ua_pwb(char *dest, const unsigned int src);
+extern char *ua_phb(char *dest, const unsigned short src);
+extern char *ua_pbb(char *dest, const unsigned char src);
+extern char *ua_pgb0(char *dest, const unsigned long src);
+extern char *ua_pwb0(char *dest, const unsigned int src);
+extern char *ua_phb0(char *dest, const unsigned short src);
+extern char *ua_pbb0(char *dest, const unsigned char src);
+
 extern char *ua_pgx(char *dest, const unsigned long src);
 extern char *ua_pwx(char *dest, const unsigned int src);
 extern char *ua_phx(char *dest, const unsigned short src);

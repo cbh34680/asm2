@@ -870,6 +870,17 @@ static void test25()
 	printf("s0=%p\nd0=%p\ns1=%p\nd1=%p\ns2=%p\ns3=%p\n", s0, d0, s1, d1, s2, s3);
 }
 
+static void test26()
+{
+	puts(ua_pgb0(gbuf, 1));
+	puts(ua_pgb0(gbuf, 2));
+	puts(ua_pgb0(gbuf, 65534));
+	puts(ua_pwb0(gbuf, -1));
+	puts(ua_pwb0(gbuf, -2));
+	puts(ua_pwb0(gbuf, -3));
+	puts(ua_pwb0(gbuf, -4));
+	puts(ua_pwb0(gbuf, 65534));
+}
 
 extern void ua_test(long);
 
@@ -949,6 +960,8 @@ int main(int argc, char** argv, char** envs)
 	test24();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 25");
 	test25();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 26");
+	test26();
 #endif
 
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ done");

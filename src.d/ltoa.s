@@ -63,7 +63,7 @@ _ua_ltoa:
 		div			rdi
 
 		; write '0' - '9'
-		mov			cl, _HEXCHARS[rdx]
+		mov			cl, _HEXCHARS[edx]
 		mov			[rbx], cl
 
 		; check input >0
