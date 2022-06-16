@@ -46,7 +46,7 @@ atoi:
 		cmp			ebx, ON
 		je			.end
 
-		; first neg sign
+		; first neg sign (OK:'-12', NG:'--12')
 		mov			ebx, ON
 		inc			rdi
 		jmp			.loop
