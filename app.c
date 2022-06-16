@@ -894,15 +894,15 @@ static void test27()
 		int r = rand();
 		long rl = r;
 
-		printf("b=%b\td=%d\n", r, r);
-		printf("b=%b\td=%d\n", -r, -r);
-		printf("b=%lb\td=%d\n", rl, rl);
-		printf("b=%lb\td=%d\n", -rl, -rl);
+		printf("b=[%b]\td=%d\n", r, r);
+		printf("b=[%b]\td=%d\n", -r, -r);
+		printf("b=[%lb]\td=%d\n", rl, rl);
+		printf("b=[%lb]\td=%d\n", -rl, -rl);
 	}
 
 	puts("*");
 
-	for (int i=0; i<48; i++)
+	for (int i=0; i<32; i++)
 	{
 		printf("[%b]\t%d\n", i, i);
 	}

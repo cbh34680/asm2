@@ -80,7 +80,7 @@ ua_pbx0:
 ua_pNx:
 		; -32, -24 ... -----------
 		; -24, -20 ... zero-flag
-		; -20,   0 ... make string
+		; -20,   0 ... make string (16 + 1 = max 17byte)
 		enter		32, 0
 
 		; mark stack-overflow

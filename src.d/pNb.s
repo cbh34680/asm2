@@ -78,17 +78,17 @@ ua_pbb0:
 ; ----------------- main
 ;
 ua_pNb:
-		; -96, -88 ... -----------
-		; -88, -84 ... arg ecx
-		; -84, -80 ... zero-flag
-		; -80,   0 ... make string (64 + 15 + 1 = max 80)
+		; -96, -92 ... -----------
+		; -92, -88 ... arg ecx
+		; -88, -84 ... zero-flag
+		; -84,   0 ... make string (64 + 15 + 1 = max 80)
 		enter		96, 0
 
 		; mark stack-overflow
 		REDZONE_MARK
 
 		; save zero-flag
-		mov			[rbp - 84], eax
+		mov			[rbp - 88], eax
 
 		; rdx = &outbuf[N] (0 origin)
 		lea			rdx, [rbp - 1]
@@ -97,12 +97,12 @@ ua_pNb:
 		mov			byte [rdx], 0x0
 
 		; save original ecx
-		mov			dword [rbp - 88], ecx
+		mov			dword [rbp - 92], ecx
 		jmp			.nosep
 
 .loop:
 		; separate every 4 byte
-		mov			eax, [rbp - 88]
+		mov			eax, [rbp - 92]
 		sub			eax, ecx
 		and			eax, 0x3
 		jnz			.nosep
@@ -131,7 +131,7 @@ ua_pNb:
 		shr			rsi, 1
 
 		; check zero-flag
-		cmp			dword [rbp - 84], 0
+		cmp			dword [rbp - 88], 0
 		jz			.nopad
 
 		; zero-padding
