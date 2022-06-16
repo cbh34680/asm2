@@ -882,6 +882,32 @@ static void test26()
 	puts(ua_pwb0(gbuf, 65534));
 }
 
+static void test27()
+{
+	time_t t;
+	time(&t);
+
+	srand(t);
+
+	for (int i=0; i<5; i++)
+	{
+		int r = rand();
+		long rl = r;
+
+		printf("b=%b\td=%d\n", r, r);
+		printf("b=%b\td=%d\n", -r, -r);
+		printf("b=%lb\td=%d\n", rl, rl);
+		printf("b=%lb\td=%d\n", -rl, -rl);
+	}
+
+	puts("*");
+
+	for (int i=0; i<48; i++)
+	{
+		printf("[%b]\t%d\n", i, i);
+	}
+}
+
 extern void ua_test(long);
 
 int main(int argc, char** argv, char** envs)
@@ -962,6 +988,8 @@ int main(int argc, char** argv, char** envs)
 	test25();
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 26");
 	test26();
+	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 27");
+	test27();
 #endif
 
 	puts("|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ done");

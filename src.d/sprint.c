@@ -59,11 +59,13 @@ static void set_data(char type, __builtin_va_list ap, struct data_st *data)
 	{
 		case 'u':
 		case 'x':
+		case 'b':
 		{
 			switch (type)
 			{
 				case 'u': data->st = ST_UNSIGNED;	break;
 				case 'x': data->nf = NF_HEXA;		break;
+				case 'b': data->nf = NF_BINARY;		break;
 			}
 
 			// fall through
@@ -155,6 +157,7 @@ static size_t val_strlen(struct data_st const *data)
 					{
 						case NF_DECIMAL:	return 20 + 1;	// width(20) + sign('-')
 						case NF_HEXA:		return 16;		// ffff ffff ffff ffff (-1)
+						case NF_BINARY:		return 64 + 15;	// 1111 11 ... 11 1111 (-1) 64bit + spc
 					}
 
 					break;
@@ -166,6 +169,7 @@ static size_t val_strlen(struct data_st const *data)
 					{
 						case NF_DECIMAL:	return 10 + 1;	// width(10) + sign('-')
 						case NF_HEXA:		return 8;		// ffff ffff (-1)
+						case NF_BINARY:		return 32 + 7;	// 1111 .. 11 (-1) 32bit + spc
 					}
 
 					break;
@@ -236,7 +240,11 @@ static void write_data(char *buff, const struct data_st *data)
 						}
 
 						case NF_HEXA:
-							ua_pgx(buff, data->val.l);
+							ua_pgx(buff, data->val.ul);
+							break;
+
+						case NF_BINARY:
+							ua_pgb0(buff, data->val.ul);
 							break;
 					}
 
@@ -260,6 +268,10 @@ static void write_data(char *buff, const struct data_st *data)
 
 						case NF_HEXA:
 							ua_pwx(buff, data->val.i);
+							break;
+
+						case NF_BINARY:
+							ua_pwb0(buff, data->val.ui);
 							break;
 					}
 
@@ -307,6 +319,7 @@ int vsprintf(char *str, const char *format, __builtin_va_list ap)
 					break;
 				}
 
+				case 'b':
 				case 'd':
 				case 'u':
 				case 'c':

@@ -54,7 +54,7 @@
 
   %assign i 1
 
-  %rep 32
+  %rep 8
 		mov			byte [rsp - i], '.'
     %assign i i + 1
   %endrep
@@ -65,7 +65,7 @@
 
   %assign i 1
 
-  %rep 32
+  %rep 8
 		cmp			byte [rsp - i], '.'
 		je			$+7
 		call		__stack_chk_fail

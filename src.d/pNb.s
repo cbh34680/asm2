@@ -78,9 +78,10 @@ ua_pbb0:
 ; ----------------- main
 ;
 ua_pNb:
-		; -96, -84 ... -----------
+		; -96, -88 ... -----------
+		; -88, -84 ... arg ecx
 		; -84, -80 ... zero-flag
-		; -80,   0 ... make string
+		; -80,   0 ... make string (64 + 15 + 1 = max 80)
 		enter		96, 0
 
 		; mark stack-overflow
@@ -95,7 +96,22 @@ ua_pNb:
 		; outbuf[N + 1] = '\0'
 		mov			byte [rdx], 0x0
 
+		; save original ecx
+		mov			dword [rbp - 88], ecx
+		jmp			.nosep
+
 .loop:
+		; separate every 4 byte
+		mov			eax, [rbp - 88]
+		sub			eax, ecx
+		and			eax, 0x3
+		jnz			.nosep
+
+		dec			rdx
+		mov			al, ' '
+		mov			[rdx], al
+.nosep:
+
 		; outpos--
 		dec			rdx
 
